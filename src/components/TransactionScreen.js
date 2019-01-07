@@ -36,9 +36,7 @@ export default class TransactionScreen extends Component {
     const { params = {} } = navigation.state;
     return {
       headerRight: (
-        // <TouchableOpacity >
-          <Icon name="camera" size={30} onPress={() => params.onPress()} color="black" style={{marginRight: 10}}/>
-        //</TouchableOpacity>
+        <Icon name="camera" size={30} onPress={() => params.onPress()} color="black" style={{marginRight: 10}}/>
       )
     }
   }

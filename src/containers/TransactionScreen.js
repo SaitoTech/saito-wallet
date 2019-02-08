@@ -48,7 +48,7 @@ export default class TransactionScreen extends Component {
       parseFloat(this.state.amt),
       parseFloat(this.state.fee)
     );
-    var newtx = new_saito.wallet.signTransaction(newtx);
+    newtx = new_saito.wallet.signTransaction(newtx);
     console.log("NEW TRANSACTION", newtx);
     new_saito.network.propagateTransaction(newtx);
     const response = newtx ? 'Your Transaction Has Been Propagated!' :

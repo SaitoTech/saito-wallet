@@ -20,19 +20,16 @@ async function getData(key) {
 }
 
 async function loadOptions() {
-  console.log("LOADING OPTIONS");
   var data = await this.getData('options')
-  console.log("RETURNED DATA", data)
   if (data) {
+    console.log(this)
     this.app.options = JSON.parse(data);
   }
 }
 
 async function saveOptions() {
-  console.log("SAVING OPTIONS");
   if (this.app) {
     if (this.app.options) {
-      console.log("RETURNED OPTIONS", this.app.options)
       await this.storeData('options', JSON.stringify(this.app.options))
     }
   }

@@ -57,18 +57,18 @@ export default class TransactionScreen extends Component {
   }
 
   sendSaitoTransaction(new_saito) {
-    console.log(this.state);
     var newtx = new_saito.wallet.createUnsignedTransaction(
       this.state.to_address,
       parseFloat(this.state.amt),
       parseFloat(this.state.fee)
     );
+
     newtx = new_saito.wallet.signTransaction(newtx);
-    console.log("NEW TRANSACTION", newtx);
+
     new_saito.network.propagateTransaction(newtx);
-    const response = newtx ? 'Your Transaction Has Been Propagated!' :
-      'Null TX, make sure you have enough funds and your address is correct'
+    const response = newtx ? 'Your Transaction Has Been Propagated!' : 'Null TX, make sure you have enough funds and your address is correct'
     Alert.alert(response);
+
     this.setState({
       to_address: '',
       fee: '',

@@ -1,12 +1,15 @@
 import React, { Component } from 'react'
 import {
   Alert,
-  Button,
-  Text,
+  // Button,
+  // Text,
   TextInput,
   View
 } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import getTheme from '../../native-base-theme/components'
+import variables from '../../native-base-theme/variables/material'
+import { Container, Card, CardItem, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
+// import Icon from 'react-native-vector-icons/FontAwesome5';
 
 export default class TransactionScreen extends Component {
   constructor(props) {
@@ -35,8 +38,20 @@ export default class TransactionScreen extends Component {
   static navigationOptions = ({navigation}) => {
     const { params = {} } = navigation.state;
     return {
-      headerRight: (
-        <Icon name="camera" size={30} onPress={() => params.onPress()} color="black" style={{marginRight: 10}}/>
+      header: (
+        <Header style={{ backgroundColor: '#E7584B'}}>
+          <Left>
+            <Button transparent onPress={() => navigation.goBack()}>
+              <Icon name="arrow-back" />
+            </Button>
+          </Left>
+          <Body>
+            <Title>Transaction</Title>
+          </Body>
+          <Right>
+            <Icon name="camera" size={30} onPress={() => params.onPress()} color="black" style={{marginRight: 10}}/>
+          </Right>
+        </Header>
       )
     }
   }
@@ -66,42 +81,48 @@ export default class TransactionScreen extends Component {
     const new_saito = navigation.getParam('saito', {})
 
     return (
-      <View style={{ flex: 1, alignItems: "center", marginTop: 20 }}>
-        <Text style={{
-          fontFamily: 'Titillium Web',
-          fontSize: 28,
-          textAlign: 'right'
-        }}>BALANCE: {new_saito.wallet.wallet.balance}</Text>
-        <TextInput
-          style={{height: 60, width: 300, fontSize: 24}}
-          placeholder="To Address"
-          onChangeText={(text) => this.setState({to_address: text})}
-          value={this.state.to_address}
-        />
-        <TextInput
-          style={{height: 60, width: 300, fontSize: 24}}
-          keyboardType="numeric"
-          placeholder="Fee"
-          onChangeText={(fee) => this.setState({fee})}
-          value={`${this.state.fee}`}
-        />
-        <TextInput
-          style={{height: 60, width: 300, fontSize: 24}}
-          keyboardType="numeric"
-          placeholder="Amount"
-          onChangeText={(amt) => this.setState({amt})}
-          value={`${this.state.amt}`}
-        />
-        <View style={{ margin: 30, width: 300}}>
-          <Button
-            onPress={() => {this.sendSaitoTransaction(new_saito)}}
-            containerViewStyle={{width: '100%'}}
-            title="Send"
-            color="#ff8844"
-            raised={true}
-          />
-        </View>
-      </View>
+      <StyleProvider style={getTheme(variables)}>
+        <Container>
+          <Content>
+            <View style={{ flex: 1, alignItems: "center", marginTop: 20 }}>
+              <Text style={{
+                fontFamily: 'Titillium Web',
+                fontSize: 28,
+                textAlign: 'right'
+              }}>BALANCE: {new_saito.wallet.wallet.balance}</Text>
+              <TextInput
+                style={{height: 60, width: 300, fontSize: 24}}
+                placeholder="To Address"
+                onChangeText={(text) => this.setState({to_address: text})}
+                value={this.state.to_address}
+              />
+              <TextInput
+                style={{height: 60, width: 300, fontSize: 24}}
+                keyboardType="numeric"
+                placeholder="Fee"
+                onChangeText={(fee) => this.setState({fee})}
+                value={`${this.state.fee}`}
+              />
+              <TextInput
+                style={{height: 60, width: 300, fontSize: 24}}
+                keyboardType="numeric"
+                placeholder="Amount"
+                onChangeText={(amt) => this.setState({amt})}
+                value={`${this.state.amt}`}
+              />
+              {/* <View style={{ margin: 30, width: 300}}> */}
+                <Button
+                  onPress={() => {this.sendSaitoTransaction(new_saito)}}
+                  containerViewStyle={{width: '100%'}}
+                  title="Send"
+                  color="#ff8844"
+                  raised={true}
+                />
+              {/* </View> */}
+            </View>
+          </Content>
+        </Container>
+      </StyleProvider>
     );
   }
 }

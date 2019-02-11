@@ -1,25 +1,26 @@
 import { ModTemplate } from 'saito-lib'
 
 export default class ReactMod extends ModTemplate {
-  constructor(props) {
+  constructor(app, props, store) {
     super(props);
+    this.app   = app
     this.props = props
+    this.store = store
   }
 
   installModule(app) {
-    this.props.forceUpdate()
+    this.store.updateSaitoWallet(this.app)
   }
 
   initialize(app) {
-    this.props.forceUpdate()
+    this.store.updateSaitoWallet(this.app)
   }
 
-  // We need something else to trigger updates to state
   onNewBlock(blk, lc) {
-    this.props.forceUpdate()
+    this.store.updateSaitoWallet(this.app)
   }
 
   updateBalance(app) {
-    this.props.forceUpdate()
+    this.store.updateSaitoWallet(this.app)
   }
 }

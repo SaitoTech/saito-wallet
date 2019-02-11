@@ -8,9 +8,7 @@ import {observable} from 'mobx'
 // const uuidv5 = require('uuid/v5');
 
 class ChatCore extends ModTemplate {
-  @observable chat = {}
-
-  constructor(store, app, props) {
+  constructor(app, store) {
     super(app);
 
     this.store = store;

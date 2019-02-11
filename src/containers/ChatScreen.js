@@ -11,10 +11,11 @@ import {
   TouchableHighlight,
   View
 } from 'react-native'
+
 import { observer, inject } from 'mobx-react'
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
-@inject('chatStore')
+@inject('saito', 'chatStore')
 @observer
 export default class ChatScreen extends Component {
   state = {
@@ -25,9 +26,9 @@ export default class ChatScreen extends Component {
 
   constructor(props) {
     super(props)
-    const { navigation } = this.props
+    // const { navigation } = this.props
 
-    this.saito = navigation.getParam('saito', {})
+    // this.saito = navigation.getParam('saito', {})
   }
 
   onSelect = data => {
@@ -83,15 +84,15 @@ export default class ChatScreen extends Component {
     });
 
     publickeys = await Promise.all(publickeys);
-    publickeys.push(this.saito.wallet.returnPublicKey());
+    publickeys.push(this.props.saito.wallet.returnPublicKey());
 
     this._sendCreateRoomRequest(publickeys, name);
   }
 
   sendCreateRoomRequest(addresses, name="") {
-    let to_address = this.saito.network.peers[0].peer.publickey
+    let to_address = this.props.saito.network.peers[0].peer.publickey
 
-    var newtx = this.saito.wallet.createUnsignedTransaction(to_address, 0.0, 0.0);
+    var newtx = this.props.saito.wallet.createUnsignedTransaction(to_address, 0.0, 0.0);
     if (newtx == null) { return; }
 
     newtx.transaction.msg = {
@@ -101,18 +102,18 @@ export default class ChatScreen extends Component {
       addresses
     }
 
-    newtx.transaction.msg = this.saito.keys.encryptMessage(this.saito.wallet.returnPublicKey(), newtx.transaction.msg);
-    newtx.transaction.msg.sig = this.saito.wallet.signMessage(JSON.stringify(newtx.transaction.msg));
+    newtx.transaction.msg = this.props.saito.keys.encryptMessage(this.props.saito.wallet.returnPublicKey(), newtx.transaction.msg);
+    newtx.transaction.msg.sig = this.props.saito.wallet.signMessage(JSON.stringify(newtx.transaction.msg));
 
-    newtx = this.saito.wallet.signTransaction(newtx);
+    newtx = this.props.saito.wallet.signTransaction(newtx);
 
-    this.saito.network.sendRequest("chat request create room", JSON.stringify(newtx.transaction));
+    this.props.saito.network.sendRequest("chat request create room", JSON.stringify(newtx.transaction));
   }
 
   newRoom() {
     debugger
     const {new_room_name} = this.state
-    let addresses = [...this.state.addresses, this.saito.wallet.returnPublicKey()]
+    let addresses = [...this.state.addresses, this.props.saito.wallet.returnPublicKey()]
     this.sendCreateRoomRequest(addresses, new_room_name)
     this.setState({ addresses: [''], new_room_name: '' })
     this.setModalVisible(false)
@@ -147,8 +148,8 @@ export default class ChatScreen extends Component {
     this.props.chatStore.clearRoomUnreadMessages(index)
     const { navigation } = this.props
     navigation.navigate('ChatDetail', {
-      wallet: this.saito.wallet,
-      saito: this.saito,
+      wallet: this.props.saito.wallet,
+      saito: this.props.saito,
     });
   }
 

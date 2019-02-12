@@ -1,14 +1,20 @@
 import React, {Component} from 'react'
-import { Button, Text, TouchableOpacity, View } from 'react-native'
-import Icon from 'react-native-vector-icons/FontAwesome5';
+import { TouchableOpacity, View } from 'react-native'
+
+import getTheme from '../../native-base-theme/components'
+import variables from '../../native-base-theme/variables/variables'
+
+import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
+// import Icon from 'react-native-vector-icons/FontAwesome5';
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 import { observer, inject } from 'mobx-react'
 
-@inject('chatStore')
+@inject('saito', 'chatStore')
 @observer
 export default class ChatScreenDetail extends Component {
   state = {
-    room_id: ""
+    room_id: "",
+    room_name: ""
   }
 
   constructor(props) {
@@ -16,34 +22,45 @@ export default class ChatScreenDetail extends Component {
 
     const { navigation } = this.props
     this.app           = navigation.getParam('saito', {});
+    this.room_name     = navigation.getParam('room_name', {})
   }
 
   static navigationOptions = ({navigation}) => {
     const { params = {} } = navigation.state;
+
     return {
-      headerLeft: (
-        <TouchableOpacity onPress={() => params.onBack()} style={{ flex:1, flexDirection: 'row'}}>
-          <Icon name="chevron-left" size={24} color="black" style={{marginLeft: 8}}/>
-          {/* <Button title="Back" onPress={() => } /> */}
-          <Text style={{fontSize: 17, marginLeft: 5, marginTop: 2}}>Back</Text>
-        </TouchableOpacity>
+      header: (
+        <StyleProvider style={getTheme(variables)} >
+          <Header style={{ backgroundColor: '#E7584B'}}>
+            <Left style={{flex: 1}}>
+              <Button transparent onPress={() => params.onBack()}>
+                <Icon name="arrow-back" />
+              </Button>
+            </Left>
+            <Body style={{flex: 1, alignItems: 'center'}}>
+              <Title>{params.room_name}</Title>
+            </Body>
+            <Right style={{flex: 1}}>
+              <Icon name="dots-horizontal" type={'MaterialCommunityIcons'} style={{color: 'white'}} onPress={() => console.log("Settings pressed")} />
+            </Right>
+          </Header>
+        </StyleProvider>
       )
     }
   }
 
   onBack = () => {
     const { navigation, chatStore } = this.props
-    // chatStore.returnCurrentRoomIDX = null;
     chatStore.setCurrentRoomIDX(null)
     navigation.goBack()
   }
 
-  componentDidMount() {
-    this.props.navigation.setParams({ onBack: this.onBack });
-  }
-
   componentWillMount() {
     this.props.chatStore.addUser(this.app.wallet.returnPublicKey())
+    this.props.navigation.setParams({
+      room_name: this.room_name,
+      onBack: this.onBack
+    });
   }
 
   async _addSendEvent(message, room_id) {
@@ -98,6 +115,7 @@ export default class ChatScreenDetail extends Component {
       return (
         <Bubble
           {...props}
+          wrapperStyle={{right: {backgroundColor: '#1c1c23'}}}
         />
       );
     }

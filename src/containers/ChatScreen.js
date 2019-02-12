@@ -1,19 +1,25 @@
 import React, {Component} from 'react'
 import axios from 'axios'
 import {
+  Alert,
   FlatList,
   Image,
   Modal,
   StyleSheet,
-  Text,
+  // Text,
   TextInput,
   TouchableOpacity,
   TouchableHighlight,
   View
 } from 'react-native'
 
+import getTheme from '../../native-base-theme/components'
+import variables from '../../native-base-theme/variables/variables'
+
+import { Container, Body, Content, Header, List, ListItem, Left, Right, Icon, Input, Item, Title, Thumbnail, Button, Spinner, Text, StyleProvider } from "native-base";
+
 import { observer, inject } from 'mobx-react'
-import Icon from 'react-native-vector-icons/FontAwesome5';
+// import Icon from 'react-native-vector-icons/FontAwesome5';
 
 @inject('saito', 'chatStore')
 @observer
@@ -26,9 +32,6 @@ export default class ChatScreen extends Component {
 
   constructor(props) {
     super(props)
-    // const { navigation } = this.props
-
-    // this.saito = navigation.getParam('saito', {})
   }
 
   onSelect = data => {
@@ -48,11 +51,19 @@ export default class ChatScreen extends Component {
   static navigationOptions = ({navigation}) => {
     const { params = {} } = navigation.state;
     return {
-      headerRight:
-        <View style={{flex: 1, flexDirection: 'row'}}>
-          <Icon name="camera" size={30} onPress={() => params.onPressScanner()} color="black" style={{marginRight: 20}}/>
-          <Icon name="plus" size={30} onPress={() => params.setModalVisible(true)} color="black" style={{marginRight: 10}}/>
-        </View>
+      header: (
+        <StyleProvider style={getTheme(variables)} >
+          <Header searchBar rounded>
+            <Icon name="arrow-back" onPress={() => navigation.goBack()} style={{ fontSize: 29, marginLeft: 9, marginRight: 10, color: 'white', alignSelf: 'center'}}/>
+            <Item style={{marginBottom: 8, marginTop: 7}}>
+              <Icon name="ios-search" />
+              <Input placeholder="Search" />
+            </Item>
+            <Icon name="camera" type={'MaterialCommunityIcons'} style={{color: 'white', marginLeft: 7, alignSelf: 'center'}} onPress={() => params.onPressScanner()}  />
+            <Icon name="ios-add" style={{color: 'white', fontSize: 34, alignSelf: 'center', marginLeft: 17, marginRight: 3}} onPress={() => params.setModalVisible(true)} />
+          </Header>
+        </StyleProvider>
+      )
     }
   }
 
@@ -111,19 +122,12 @@ export default class ChatScreen extends Component {
   }
 
   newRoom() {
-    debugger
     const {new_room_name} = this.state
     let addresses = [...this.state.addresses, this.props.saito.wallet.returnPublicKey()]
     this.sendCreateRoomRequest(addresses, new_room_name)
     this.setState({ addresses: [''], new_room_name: '' })
     this.setModalVisible(false)
   }
-
-  // addAddress() {
-  //   let addresses = [...this.state.addresses, this.state.address_submit]
-  //   this.setState({ addresses })
-  //   this.setState({ address_submit: '' })
-  // }
 
   onChangeAddress(id, value) {
     let {addresses} = this.state
@@ -143,13 +147,14 @@ export default class ChatScreen extends Component {
     this.setState({ addresses });
   }
 
-  onPress(index){
+  onPress(index) {
     this.props.chatStore.setCurrentRoomIDX(index)
     this.props.chatStore.clearRoomUnreadMessages(index)
     const { navigation } = this.props
     navigation.navigate('ChatDetail', {
       wallet: this.props.saito.wallet,
       saito: this.props.saito,
+      room_name: this.props.chatStore.returnCurrentRoomName()
     });
   }
 
@@ -162,73 +167,86 @@ export default class ChatScreen extends Component {
         onChangeText={this.onChangeName.bind(this)}
         value={new_room_name}
       /> : null
+
     return (
-      <View style={styles.container}>
-      <Modal
-          animationType="slide"
-          transparent={false}
-          visible={this.state.modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-          }}>
-          <View style={{ flex: 1, flexDirection: 'column', alignItems: "center", justifyContent: 'center' }}>
-            <Text style={{
-              fontFamily: 'Titillium Web',
-              fontSize: 28,
-              textAlign: 'right'
-            }}>Add People to Chat</Text>
-            {
-              addresses.map((address, idx) => {
-                return (
-                  <TextInput
-                    id={idx}
-                    key={idx}
-                    style={{height: 60, width: 300, fontSize: 24, textAlign: 'center'}}
-                    placeholder="Address"
-                    onChangeText={this.onChangeAddress.bind(this, idx)}
-                    value={this.state.addresses[idx]}
-                  />
-                )
-              })
-            }
-            { name_input }
-            <Icon name="plus" size={30} onPress={() => this.newAddress()} color="black"/>
-            <View style={{flexDirection: 'row', alignItems: "center", justifyContent: 'center', margin: 25 }}>
-              <View style={{ margin: 10 }}>
-                <TouchableHighlight
-                  onPress={() => {
-                    this.newRoom()
-                  }}>
-                  <Text style={{fontSize: 24, color: '#ff8844'}}>Create Room</Text>
-                </TouchableHighlight>
-              </View>
-              <View style={{ margin: 10 }}>
-                <TouchableHighlight
-                  onPress={() => {
-                    this.setModalVisible(!this.state.modalVisible);
-                  }}>
-                  <Text style={{fontSize: 24}}>Cancel</Text>
-                </TouchableHighlight>
+      <Container>
+        <Content>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+            }}>
+            <View style={{ flex: 1, flexDirection: 'column', alignItems: "center", justifyContent: 'center' }}>
+              <Text style={{
+                fontFamily: 'Titillium Web',
+                fontSize: 28,
+                textAlign: 'right'
+              }}>Add People to Chat</Text>
+              {
+                addresses.map((address, idx) => {
+                  return (
+                    <TextInput
+                      id={idx}
+                      key={idx}
+                      style={{height: 60, width: 300, fontSize: 24, textAlign: 'center'}}
+                      placeholder="Address"
+                      onChangeText={this.onChangeAddress.bind(this, idx)}
+                      value={this.state.addresses[idx]}
+                    />
+                  )
+                })
+              }
+              { name_input }
+              <Icon name="ios-add" style={{fontSize: 64}} onPress={() => this.newAddress()} color="black"/>
+              <View style={{flexDirection: 'column', alignItems: "center", justifyContent: 'center', margin: 25 }}>
+                <View style={{ margin: 10 }}>
+                  <Button primary onPress={() => {this.newRoom()}}>
+                    <Text>
+                      Create Room
+                    </Text>
+                  </Button>
+                </View>
+                <View style={{ margin: 10 }}>
+                  <Button dark onPress={() => {this.setModalVisible(!this.state.modalVisible)}}>
+                    <Text>
+                      Close
+                    </Text>
+                  </Button>
+                </View>
               </View>
             </View>
-          </View>
-        </Modal>
-        <FlatList
-          data={this.props.chatStore.cleanRoomsForGiftedChat}
-          renderItem={({item, index}) => {
-            var {room_id} = item
-            var {identifier, avatar} = item.users[0];
-            let room_name = item.unread_messages.length > 0 ? `${identifier} (${item.unread_messages.length})` : identifier
-            return (
-              <TouchableOpacity index={index} style={styles.room} onPress={this.onPress.bind(this, index)}>
-                <Image
-                  style={styles.roomImage} source={{uri: avatar}}/>
-                <Text style={styles.item}>{room_name}</Text>
-              </TouchableOpacity>
-            )
-          }}
-        />
-      </View>
+          </Modal>
+          {this.props.chatStore.isFetchingChat ? <Spinner color='rgba(28,28,35,1)' /> :
+            <FlatList
+              data={this.props.chatStore.cleanRoomsForGiftedChat}
+              renderItem={({item, index}) => {
+                var {room_id, last_message} = item
+                var {identifier, avatar} = item.users[0];
+                let room_name = item.unread_messages.length > 0 ? `${identifier} (${item.unread_messages.length})` : identifier
+                room_name = room_name.slice(0,20)
+
+                return (
+                  <ListItem avatar onPress={this.onPress.bind(this, index)} style={{ height: 75 }}>
+                    <Left>
+                      <Thumbnail source={require('../../assets/img/saito_logo_black.png')}/>
+                    </Left>
+
+                    <Body>
+                      <Text>{room_name}</Text>
+                      <Text note>{last_message.message}</Text>
+                    </Body>
+
+                    <Right style={{height:66}}>
+                      <Text note>3:43 pm</Text>
+                    </Right>
+                  </ListItem>
+                )
+              }
+            } />}
+        </Content>
+      </Container>
     )
   }
 }

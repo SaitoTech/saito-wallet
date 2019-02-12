@@ -1,45 +1,48 @@
 import React, {Component} from 'react'
-import {View, StyleSheet, Text} from 'react-native'
+import {View, StyleSheet} from 'react-native'
 import QRCode from 'react-native-qrcode';
 
+import getTheme from '../../native-base-theme/components'
+import variables from '../../native-base-theme/variables/variables'
+
+import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
+
+import {inject} from 'mobx-react'
+
+@inject('saitoStore')
 export default class WalletScreen extends Component {
-  static navigationOptions = {
-    header: null
-  }
-
-  constructor(props) {
-    super(props)
-    this.state = {};
-
-    const { navigation } = this.props
-    const new_saito = navigation.getParam('saito', {})
-    this.state.wallet = new_saito.wallet.wallet
+  static navigationOptions = ({navigation}) => {
+    const { params = {} } = navigation.state;
+    return {
+      header: (
+        <StyleProvider style={getTheme(variables)}>
+          <Header>
+            <Left style={{flex: 1}}>
+              <Button transparent onPress={() => navigation.goBack()}>
+                <Icon name="arrow-back" />
+              </Button>
+            </Left>
+            <Body style={{flex: 1, alignItems: 'center'}}>
+              <Title>Wallet</Title>
+            </Body>
+            <Right style={{flex: 1}}>
+            </Right>
+          </Header>
+        </StyleProvider>
+      )
+    }
   }
 
   render() {
+    const { saitoStore } = this.props
     return(
-      <View style={{flex: 1, alignItems: 'center', marginTop: 60}}>
+      <View style={{flex: 1, alignItems: 'center', marginTop: 25}}>
         <QRCode
-          value={this.state.wallet.publickey}
+          value={saitoStore.publickey}
           size={325}
           bgColor='black'
           fgColor='white'/>
-        <Text style={styles.welcome}>Wallet QR</Text>
       </View>
     )
   }
 }
-
-const styles = StyleSheet.create({
-  header: {
-    fontFamily: 'Titillium Web',
-    fontSize: 42,
-    textAlign: 'center',
-    marginTop: 5
-  },
-  welcome: {
-    fontFamily: 'Titillium Web',
-    fontSize: 28,
-    textAlign: 'right'
-  }
-});

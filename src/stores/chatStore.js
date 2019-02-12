@@ -1,7 +1,7 @@
 import { observable, computed, action } from 'mobx'
 
 export default class ChatStore {
-
+  @observable isFetchingChat = false
   @observable chat = { rooms: [] }
   @observable users = {}
   currentRoomIDX = null
@@ -18,6 +18,11 @@ export default class ChatStore {
       let room_messages = room.messages.map(message => this.importMessage(message))
       return Promise.all(room_messages)
     })
+  }
+
+  @action
+  setLoadingChat(isFetching) {
+    this.isFetchingChat = isFetching
   }
 
   @action
@@ -123,6 +128,7 @@ export default class ChatStore {
         key: (index).toString(),
         room_id: room.room_id,
         unread_messages: room.unread_messages || [],
+        last_message: room.messages[0],
         createdAt: new Date(),
         users: [
           {
@@ -132,9 +138,6 @@ export default class ChatStore {
         ]
       }
     })
-    // debugger
-    // cleaned_rooms.users = Promise.all(cleaned_rooms.users)
-    // debugger
     return cleaned_rooms
   }
 
@@ -189,6 +192,10 @@ export default class ChatStore {
 
   returnCurrentRoomID() {
     return this.chat.rooms[this.currentRoomIDX].room_id;
+  }
+
+  returnCurrentRoomName() {
+    return this.chat.rooms[this.currentRoomIDX].name;
   }
 
   findRoom(room_id) {

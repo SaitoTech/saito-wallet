@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
 import {
   Alert,
-  // Button,
-  // Text,
   TextInput,
   View
 } from 'react-native'
-import getTheme from '../../native-base-theme/components'
-import variables from '../../native-base-theme/variables/material'
-import { Container, Card, CardItem, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
-// import Icon from 'react-native-vector-icons/FontAwesome5';
 
+import getTheme from '../../native-base-theme/components'
+import variables from '../../native-base-theme/variables/variables'
+
+import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
+import { inject } from 'mobx-react';
+
+@inject('saito', 'saitoStore')
 export default class TransactionScreen extends Component {
   constructor(props) {
     super(props)
@@ -39,19 +40,21 @@ export default class TransactionScreen extends Component {
     const { params = {} } = navigation.state;
     return {
       header: (
-        <Header style={{ backgroundColor: '#E7584B'}}>
-          <Left>
-            <Button transparent onPress={() => navigation.goBack()}>
-              <Icon name="arrow-back" />
-            </Button>
-          </Left>
-          <Body>
-            <Title>Transaction</Title>
-          </Body>
-          <Right>
-            <Icon name="camera" size={30} onPress={() => params.onPress()} color="black" style={{marginRight: 10}}/>
-          </Right>
-        </Header>
+        <StyleProvider style={getTheme(variables)}>
+          <Header >
+            <Left style={{ flex: 1}}>
+              <Button transparent onPress={() => navigation.goBack()}>
+                <Icon name="arrow-back" />
+              </Button>
+            </Left>
+            <Body style={{ flex: 1}}>
+              <Title>Transaction</Title>
+            </Body>
+            <Right style={{ flex: 1}}>
+              <Icon name="camera" style={{color: 'white', fontSize: 28}} onPress={() => params.onPress()} />
+            </Right>
+          </Header>
+        </StyleProvider>
       )
     }
   }
@@ -77,19 +80,16 @@ export default class TransactionScreen extends Component {
   }
 
   render() {
-    const { navigation } = this.props
-    const new_saito = navigation.getParam('saito', {})
-
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container>
           <Content>
-            <View style={{ flex: 1, alignItems: "center", marginTop: 20 }}>
+            <View style={{ flex: 1, alignItems: "center", margin: 5,  marginLeft: 28, marginRight: 28}}>
               <Text style={{
                 fontFamily: 'Titillium Web',
-                fontSize: 28,
-                textAlign: 'right'
-              }}>BALANCE: {new_saito.wallet.wallet.balance}</Text>
+                fontSize: 48,
+                textAlign: 'left'
+              }}>{this.props.saitoStore.balance}</Text>
               <TextInput
                 style={{height: 60, width: 300, fontSize: 24}}
                 placeholder="To Address"
@@ -110,15 +110,9 @@ export default class TransactionScreen extends Component {
                 onChangeText={(amt) => this.setState({amt})}
                 value={`${this.state.amt}`}
               />
-              {/* <View style={{ margin: 30, width: 300}}> */}
-                <Button
-                  onPress={() => {this.sendSaitoTransaction(new_saito)}}
-                  containerViewStyle={{width: '100%'}}
-                  title="Send"
-                  color="#ff8844"
-                  raised={true}
-                />
-              {/* </View> */}
+              <Button block dark style={{marginTop: 20, color: '#1c1c23'}} onPress={() => {this.sendSaitoTransaction(this.props.saito)}}>
+                <Text>Send</Text>
+              </Button>
             </View>
           </Content>
         </Container>

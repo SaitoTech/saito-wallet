@@ -11,13 +11,12 @@ class ChatCore extends ModTemplate {
   constructor(app, store) {
     super(app);
 
-    this.store = store;
     this.app = app;
+    this.store = store;
 
     this.name = "Chat";
-    // this.browser_active = 0;
 
-    this.chat
+    this.chat = {}
     this.chat.rooms = []
 
     this.public_room_id = '984cb2da-13c1-11e9-ab14-d663bd873d93';
@@ -30,10 +29,12 @@ class ChatCore extends ModTemplate {
   }
 
   initialize() {
+    // start fecthing chat
+    this.store.setLoadingChat(true)
     axios.get(`${this._getChatURL()}/chat/${this.app.wallet.returnPublicKey()}`)
       .then((response) => {
-        this.chat = response.data
-        this.store.setChat(this.chat)
+        this.store.setChat(response.data)
+        this.store.setLoadingChat(false)
       })
       .catch(err => console.log(err))
   }
@@ -147,7 +148,6 @@ class ChatCore extends ModTemplate {
     let txmsg = tx.returnMessage();
     let { name, room_id, addresses } = txmsg;
 
-    // if (this.chat.rooms.find(room => room.room_id == room_id)) { return; }
     if (this.store.findRoom(room_id)) { return }
 
     if (addresses.length == 2) {
@@ -162,7 +162,6 @@ class ChatCore extends ModTemplate {
     }
 
     this.store.addRoom(new_room);
-    // this.chat.rooms.push(new_room);
 
     return new_room
   }

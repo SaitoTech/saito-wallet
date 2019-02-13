@@ -13,6 +13,9 @@ export default class ChatStore {
   @action
   setChat(chat) {
     this.chat = chat
+    this.chat.rooms.replace(this.chat.rooms.slice().sort((a,b) => {
+      return JSON.parse(b.messages[b.messages.length - 1].tx).ts - JSON.parse(a.messages[a.messages.length - 1].tx).ts
+    }))
     this.chat.rooms.map(async (room, idx) => {
       room.name = await this.getRoomName(idx);
       let room_messages = room.messages.map(message => this.importMessage(message))
@@ -128,7 +131,7 @@ export default class ChatStore {
         key: (index).toString(),
         room_id: room.room_id,
         unread_messages: room.unread_messages || [],
-        last_message: room.messages[0],
+        last_message: room.messages[room.messages.length - 1],
         createdAt: new Date(),
         users: [
           {
@@ -137,6 +140,9 @@ export default class ChatStore {
           }
         ]
       }
+    })
+    cleaned_rooms.sort((a,b) => {
+      return b.last_message.timestamp - a.last_message.timestamp
     })
     return cleaned_rooms
   }

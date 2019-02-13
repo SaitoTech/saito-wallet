@@ -1,18 +1,17 @@
 import React, {Component} from 'react'
-import {View, StyleSheet} from 'react-native'
+import {View} from 'react-native'
 import QRCode from 'react-native-qrcode';
 
-import getTheme from '../../native-base-theme/components'
-import variables from '../../native-base-theme/variables/variables'
+import getTheme from '../../../native-base-theme/components'
+import variables from '../../../native-base-theme/variables/variables'
 
-import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
+import { Body, Header, Left, Right, Icon, Title, Button, StyleProvider } from "native-base";
 
 import {inject} from 'mobx-react'
 
 @inject('saitoStore')
 export default class WalletScreen extends Component {
   static navigationOptions = ({navigation}) => {
-    const { params = {} } = navigation.state;
     return {
       header: (
         <StyleProvider style={getTheme(variables)}>

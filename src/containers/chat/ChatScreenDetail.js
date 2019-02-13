@@ -1,8 +1,8 @@
 import React, {Component} from 'react'
 import { TouchableOpacity, View } from 'react-native'
 
-import getTheme from '../../native-base-theme/components'
-import variables from '../../native-base-theme/variables/variables'
+import getTheme from '../../../native-base-theme/components'
+import variables from '../../../native-base-theme/variables/variables'
 
 import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
 // import Icon from 'react-native-vector-icons/FontAwesome5';

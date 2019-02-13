@@ -136,7 +136,14 @@ android {
     }
 }
 
+configurations.all {
+    resolutionStrategy {
+        force 'org.webkit:android-jsc:r236355'
+    }
+}
+
 dependencies {
+    compile project(':react-native-fs')
     compile project(':react-native-camera')
     compile project(':react-native-gesture-handler')
     compile project(':react-native-vector-icons')

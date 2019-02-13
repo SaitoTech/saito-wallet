@@ -13,8 +13,8 @@ import {
   View
 } from 'react-native'
 
-import getTheme from '../../native-base-theme/components'
-import variables from '../../native-base-theme/variables/variables'
+import getTheme from '../../../native-base-theme/components'
+import variables from '../../../native-base-theme/variables/variables'
 
 import { Container, Body, Content, Header, List, ListItem, Left, Right, Icon, Input, Item, Title, Thumbnail, Button, Spinner, Text, StyleProvider } from "native-base";
 
@@ -224,22 +224,29 @@ export default class ChatScreen extends Component {
               renderItem={({item, index}) => {
                 var {room_id, last_message} = item
                 var {identifier, avatar} = item.users[0];
+
+                let d = new Date(last_message.timestamp);
+                let hours = ((d.getHours() + 11) % 12 + 1)
+                let am_pm = d.getHours() > 12 ? 'PM' : 'AM'
+                let timestamp = `${hours}:${("0" + d.getMinutes()).substr(-2)} ${am_pm}`
+
                 let room_name = item.unread_messages.length > 0 ? `${identifier} (${item.unread_messages.length})` : identifier
                 room_name = room_name.slice(0,20)
 
                 return (
-                  <ListItem avatar onPress={this.onPress.bind(this, index)} style={{ height: 75 }}>
+                  // <ListItem avatar onPress={this.onPress.bind(this, index)} style={{ height: 75 }}>
+                  <ListItem avatar onPress={this.onPress.bind(this, index)} style={{ height: 80}}>
                     <Left>
-                      <Thumbnail source={require('../../assets/img/saito_logo_black.png')}/>
+                      <Thumbnail source={require('../../../assets/img/saito_logo_black.png')}/>
                     </Left>
 
-                    <Body>
-                      <Text>{room_name}</Text>
+                    <Body style={{height: 80}}>
+                      <Text >{room_name}</Text>
                       <Text note>{last_message.message}</Text>
                     </Body>
 
-                    <Right style={{height:66}}>
-                      <Text note>3:43 pm</Text>
+                    <Right style={{height: 80}}>
+                      <Text note>{timestamp}</Text>
                     </Right>
                   </ListItem>
                 )

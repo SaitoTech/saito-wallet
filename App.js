@@ -11,12 +11,18 @@ import React, {Component} from 'react';
 import { createStackNavigator, createAppContainer } from "react-navigation";
 
 // Container Screens
-import HomeScreen from './src/containers/HomeScreen.js'
-import ScanScreen from './src/containers/ScanScreen.js'
-import TransactionScreen from './src/containers/TransactionScreen.js'
-import WalletScreen from './src/containers/WalletScreen.js'
-import ChatScreen from './src/containers/ChatScreen.js'
-import ChatScreenDetail from './src/containers/ChatScreenDetail.js'
+import HomeScreen from './src/containers/home/HomeScreen.js'
+
+// settings screen
+import SettingsScreen from './src/containers/settings/SettingsScreen.js'
+import SettingsWalletScreen from './src/containers/settings/SettingsWalletScreen.js'
+
+
+import ScanScreen from './src/containers/scanner/ScanScreen.js'
+import TransactionScreen from './src/containers/transaction/TransactionScreen.js'
+import WalletScreen from './src/containers/wallet/WalletScreen.js'
+import ChatScreen from './src/containers/chat/ChatScreen.js'
+import ChatScreenDetail from './src/containers/chat/ChatScreenDetail.js'
 
 // Modules
 import ReactMod from './src/modules/ReactMod.js'
@@ -32,6 +38,8 @@ import ChatStore from './src/stores/chatStore'
 const AppNavigator = createStackNavigator(
   {
     Home: HomeScreen,
+    Settings: SettingsScreen,
+    WalletSettings: SettingsWalletScreen,
     Transactions: TransactionScreen,
     Wallet: WalletScreen,
     Chat: ChatScreen,
@@ -45,7 +53,7 @@ const AppNavigator = createStackNavigator(
 
 const AppContainer = createAppContainer(AppNavigator);
 
-export default class App extends Component<Props> {
+export default class App extends Component {
   constructor(props) {
     super(props)
 

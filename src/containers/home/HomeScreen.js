@@ -1,30 +1,26 @@
 import React, {Component} from 'react';
 import {
   Alert,
-  // Button,
   Clipboard,
   Dimensions,
   Image,
   ScrollView,
   StyleSheet,
-  // Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
 import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
 
-import getTheme from '../../native-base-theme/components'
-import variables from '../../native-base-theme/variables/variables'
-// import Icon from 'react-native-vector-icons/FontAwesome5';
+import getTheme from '../../../native-base-theme/components'
+import variables from '../../../native-base-theme/variables/variables'
+
 
 import { observer, inject } from 'mobx-react'
 
-type Props = {};
-
 @inject('saito', 'saitoStore', 'chatStore')
 @observer
-export default class HomeScreen extends Component<Props> {
+export default class HomeScreen extends Component {
 
   constructor(props) {
     super(props)
@@ -42,7 +38,7 @@ export default class HomeScreen extends Component<Props> {
               <Title>Saito Wallet</Title>
             </Body>
             <Right style={{flex: 1}}>
-              <Icon name="md-settings" type={'Ionicons'} style={{color: 'white', margin: 7, fontSize: 28}} onPress={() => console.log("Settings pressed")} />
+              <Icon name="md-settings" type={'Ionicons'} style={{color: 'white', margin: 7, fontSize: 28}} onPress={() => navigation.navigate('Settings')} />
             </Right>
           </Header>
         </StyleProvider>
@@ -56,7 +52,7 @@ export default class HomeScreen extends Component<Props> {
         <View style={styles.container}>
           <Image
             style={{width: 100, height: 100, marginTop: 20}}
-            source={require('../../assets/img/saito_logo_black.png')}
+            source={require('../../../assets/img/saito_logo_black.png')}
           />
           <Text style={styles.header}>BALANCE: {this.props.saitoStore.balance}</Text>
           <View style={{
@@ -74,17 +70,17 @@ export default class HomeScreen extends Component<Props> {
               <Icon style={{fontSize: 35}} name="clipboard"/>
             </TouchableOpacity>
           </View>
-          <View style={{
+          {/* <View style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
           }}>
             <Button dark style={{ margin: 15 }} onPress={() => console.log("Wallet Reset")}>
-              <Text style={{fontFamily: 'Titillium Web'}}>Reset Wallet</Text>
+              <Text style={{fontFamily: 'Titillium Web'}}>Save Wallet</Text>
             </Button>
             <Button dark style={{ margin: 15 }} onPress={() => console.log("Import Wallet")}>
               <Text style={{fontFamily: 'Titillium Web'}}>Import Wallet</Text>
             </Button>
-          </View>
+          </View> */}
           <Text style={styles.moduleHeader}>MODULES</Text>
           <View style={{
             flex: 2,
@@ -110,13 +106,13 @@ export default class HomeScreen extends Component<Props> {
 
             <TouchableOpacity style={styles.module}
               onPress={() => this.props.navigation.navigate('Transactions')}>
-              <Icon name="link" style={{fontSize: 40}} color="black" />
+              <Icon name="link" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
               <Text style={styles.moduleText}>Send TX</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.module}
               onPress={() => this.props.navigation.navigate('Wallet')}>
-              <Icon name="wallet" style={{fontSize: 40}} color="black" />
+              <Icon name="wallet" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
               <Text style={styles.moduleText}>Wallet</Text>
             </TouchableOpacity>
 
@@ -129,7 +125,6 @@ export default class HomeScreen extends Component<Props> {
         </View>
       </StyleProvider>
     );
-
   }
 }
 

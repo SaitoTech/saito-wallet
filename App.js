@@ -16,6 +16,7 @@ import HomeScreen from './src/containers/home/HomeScreen.js'
 // settings screen
 import SettingsScreen from './src/containers/settings/SettingsScreen.js'
 import SettingsWalletScreen from './src/containers/settings/SettingsWalletScreen.js'
+import SettingsDefaultFeeScreen from './src/containers/settings/SettingsDefaultFeeScreen.js'
 
 
 import ScanScreen from './src/containers/scanner/ScanScreen.js'
@@ -40,6 +41,7 @@ const AppNavigator = createStackNavigator(
     Home: HomeScreen,
     Settings: SettingsScreen,
     WalletSettings: SettingsWalletScreen,
+    DefaultFeeSettings: SettingsDefaultFeeScreen,
     Transactions: TransactionScreen,
     Wallet: WalletScreen,
     Chat: ChatScreen,

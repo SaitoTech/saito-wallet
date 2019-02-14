@@ -1,3 +1,4 @@
+import axios from 'axios'
 import {AsyncStorage} from 'react-native'
 
 async function storeData(key, value) {
@@ -35,4 +36,22 @@ async function saveOptions() {
   }
 }
 
-export default { storeData, getData, loadOptions, saveOptions }
+async function resetOptions() {
+  debugger
+  let peer = this.app.network.peers[0].peer.endpoint ? this.app.network.peers[0].peer.endpoint : this.app.network.peers[0].peer
+  var {protocol, host, port} = peer
+
+  let tmpdate = new Date().getTime();
+  let loadurl = `/options?x=${tmpdate}`;
+
+  axios.get(`${protocol}://${host}:${port}${loadurl}`)
+    .then((response) => response.data)
+    .then(data => {
+      debugger
+      this.app.options = data
+      // also need to create new wallet object following new data
+    })
+    .error(err => console.log(err.message))
+}
+
+export default { storeData, getData, loadOptions, saveOptions, resetOptions }

@@ -8,7 +8,33 @@ export default class RegistractionScreen extends Component {
   state = {
     requested_identifier: ''
   }
-  publickey = ''
+
+  static navigationOptions = ({navigation}) => {
+    const { params = {} } = navigation.state
+    return {
+      header: (
+        <StyleProvider style={getTheme(variables)} >
+          <Header >
+            <Left style={{flex: 1}}>
+              <Button transparent onPress={() => {
+                  navigation.goBack()
+                }}>
+                <Icon name="arrow-back" />
+              </Button>
+            </Left>
+            <Body style={{flex: 1, alignItems: 'center'}}>
+              <Title>
+                Restore
+              </Title>
+            </Body>
+            <Right style={{flex: 1}}>
+              <Icon name='camera' style={{color: 'white'}} onPress={() => params.onPress()} />
+            </Right>
+          </Header>
+        </StyleProvider>
+      )
+    }
+  }
 
 
   sendRequestToNetwork(msg, amount, fee) {
@@ -87,11 +113,17 @@ export default class RegistractionScreen extends Component {
 
   render() {
     return (
-      <View>
-        <Text>
-          This is the RegistractionScreen
-        </Text>
-      </View>
+      <Content contentContainerStyle={{ flex: 1, justifyContent: 'center'}}>
+        <Form>
+          <Item floatingLabel>
+            <Label>Privatekey</Label>
+            <Input onChangeText={(e) => this.setState({ address: e })} />
+          </Item>
+          <Button full style={{ margin: 10 }} onPress={() => this.restoreFromPrivateKey()}>
+            <Text>Restore</Text>
+          </Button>
+        </Form>
+      </Content>
     )
   }
 }

@@ -30,10 +30,13 @@ class ChatCore extends ModTemplate {
 
   initialize() {
     // start fecthing chat
+    let publickey = this.app.wallet.returnPublicKey()
+    this.store.addUser(publickey)
     this.store.setLoadingChat(true)
-    axios.get(`${this._getChatURL()}/chat/${this.app.wallet.returnPublicKey()}`)
-      .then((response) => {
-        this.store.setChat(response.data)
+
+    axios.get(`${this._getChatURL()}/chat/${publickey}`)
+      .then(async (response) => {
+        await this.store.setChat(response.data)
         this.store.setLoadingChat(false)
       })
       .catch(err => console.log(err))

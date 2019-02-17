@@ -7,6 +7,8 @@
  */
 
 import { Saito } from 'saito-lib';
+import config from './saito.config'
+
 import React, {Component} from 'react';
 import { createStackNavigator, createAppContainer } from "react-navigation";
 
@@ -17,6 +19,7 @@ import HomeScreen from './src/containers/home/HomeScreen.js'
 import SettingsScreen from './src/containers/settings/SettingsScreen.js'
 import SettingsWalletScreen from './src/containers/settings/SettingsWalletScreen.js'
 import SettingsDefaultFeeScreen from './src/containers/settings/SettingsDefaultFeeScreen.js'
+import SettingsRestorePrivateKeyScreen from './src/containers/settings/SettingsRestorePrivateKeyScreen.js'
 
 
 import ScanScreen from './src/containers/scanner/ScanScreen.js'
@@ -29,8 +32,6 @@ import ChatScreenDetail from './src/containers/chat/ChatScreenDetail.js'
 import ReactMod from './src/modules/ReactMod.js'
 import ChatCore from './src/modules/ChatCore.js'
 
-import db from './src/db.js'
-
 import { Provider } from 'mobx-react'
 
 import SaitoStore from './src/stores/saitoStore'
@@ -42,6 +43,7 @@ const AppNavigator = createStackNavigator(
     Settings: SettingsScreen,
     WalletSettings: SettingsWalletScreen,
     DefaultFeeSettings: SettingsDefaultFeeScreen,
+    RestorePrivateKeySettings: SettingsRestorePrivateKeyScreen,
     Transactions: TransactionScreen,
     Wallet: WalletScreen,
     Chat: ChatScreen,
@@ -59,26 +61,7 @@ export default class App extends Component {
   constructor(props) {
     super(props)
 
-    this.saito = new Saito({
-      db,
-      peers: [{
-        host: "apps.saito.network",
-        port: 443,
-        protocol: "https",
-        synctype: "lite"
-      }],
-      wallet: {
-        privatekey: "67e0dbd52d0dbf43e30d4f5e91537eb0af0784db8bede408bd4e49a717d04670",
-        publickey: "vNYBdjVc211SxLc9LyQALgrcs3kEe9ZtN9HDHtWsf7pw"
-      },
-      dns: [{
-        host: "apps.saito.network",
-        port: 443,
-        protocol: "https",
-        publickey: "npDwmBDQafC148AyhqeEBMshHyzJww3X777W9TM3RYNv",
-        domain: "saito"
-      }]
-    })
+    this.saito = new Saito(config)
 
     this.chatStore = new ChatStore(this.saito)
     this.saitoStore = new SaitoStore(this.saito)

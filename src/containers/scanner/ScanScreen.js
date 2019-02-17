@@ -10,7 +10,6 @@ import QRCodeScanner from 'react-native-qrcode-scanner';
 
 export default class ScanScreen extends Component {
   static navigationOptions = ({navigation}) => {
-    const { params = {} } = navigation.state;
     return {
       header: (
         <StyleProvider style={getTheme(variables)} >
@@ -35,7 +34,7 @@ export default class ScanScreen extends Component {
   onSuccess(e) {
     const { navigation } = this.props;
     navigation.goBack();
-    navigation.state.params.onSelect({ to_address: e.data });
+    navigation.state.params.onSelect({ address: e.data });
   }
 
   render() {

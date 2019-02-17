@@ -10,13 +10,15 @@ export default class ChatStore {
     this.saito = saito;
   }
 
+  // initialize() {}
+
   @action
-  setChat(chat) {
+  async setChat(chat) {
     this.chat = chat
     this.chat.rooms.replace(this.chat.rooms.slice().sort((a,b) => {
       return JSON.parse(b.messages[b.messages.length - 1].tx).ts - JSON.parse(a.messages[a.messages.length - 1].tx).ts
     }))
-    this.chat.rooms.map(async (room, idx) => {
+    return this.chat.rooms.map(async (room, idx) => {
       room.name = await this.getRoomName(idx);
       let room_messages = room.messages.map(message => this.importMessage(message))
       return Promise.all(room_messages)
@@ -127,6 +129,7 @@ export default class ChatStore {
 
   @computed get cleanRoomsForGiftedChat() {
     var cleaned_rooms = this.chat.rooms.map((room, index) => {
+      let last_message = room.messages[room.messages.length - 1]
       return {
         key: (index).toString(),
         room_id: room.room_id,

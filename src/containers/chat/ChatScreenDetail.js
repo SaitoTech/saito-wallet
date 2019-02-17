@@ -56,7 +56,6 @@ export default class ChatScreenDetail extends Component {
   }
 
   componentWillMount() {
-    this.props.chatStore.addUser(this.app.wallet.returnPublicKey())
     this.props.navigation.setParams({
       room_name: this.room_name,
       onBack: this.onBack

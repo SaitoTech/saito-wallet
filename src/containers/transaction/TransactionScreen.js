@@ -17,7 +17,7 @@ export default class TransactionScreen extends Component {
     super(props)
 
     this.state = {
-      to_address: '',
+      address: '',
       fee: '',
       amt: ''
     }
@@ -61,7 +61,7 @@ export default class TransactionScreen extends Component {
 
   sendSaitoTransaction(new_saito) {
     var newtx = new_saito.wallet.createUnsignedTransaction(
-      this.state.to_address,
+      this.state.address,
       parseFloat(this.state.amt),
       parseFloat(this.state.fee)
     );
@@ -73,7 +73,7 @@ export default class TransactionScreen extends Component {
     Alert.alert(response);
 
     this.setState({
-      to_address: '',
+      address: '',
       fee: '',
       amt: ''
     })
@@ -93,8 +93,8 @@ export default class TransactionScreen extends Component {
               <TextInput
                 style={{height: 60, width: 300, fontSize: 24}}
                 placeholder="To Address"
-                onChangeText={(text) => this.setState({to_address: text})}
-                value={this.state.to_address}
+                onChangeText={(text) => this.setState({address: text})}
+                value={this.state.address}
               />
               <TextInput
                 style={{height: 60, width: 300, fontSize: 24}}

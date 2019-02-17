@@ -37,21 +37,19 @@ async function saveOptions() {
 }
 
 async function resetOptions() {
-  debugger
   let peer = this.app.network.peers[0].peer.endpoint ? this.app.network.peers[0].peer.endpoint : this.app.network.peers[0].peer
   var {protocol, host, port} = peer
 
   let tmpdate = new Date().getTime();
   let loadurl = `/options?x=${tmpdate}`;
 
-  axios.get(`${protocol}://${host}:${port}${loadurl}`)
-    .then((response) => response.data)
-    .then(data => {
-      debugger
-      this.app.options = data
-      // also need to create new wallet object following new data
-    })
-    .error(err => console.log(err.message))
+  try {
+    await AsyncStorage.removeItem(`@SaitoWallet:options`)
+    var response = await axios.get(`${protocol}://${host}:${port}${loadurl}`)
+    this.app.options = response.data
+  } catch(err) {
+    console.log(err.message)
+  }
 }
 
 export default { storeData, getData, loadOptions, saveOptions, resetOptions }

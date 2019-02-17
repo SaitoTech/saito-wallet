@@ -1,3 +1,6 @@
+import { Saito } from 'saito-lib'
+import config from '../../../saito.config'
+
 import React, {Component} from 'react'
 
 import { Alert } from 'react-native'
@@ -27,36 +30,31 @@ export default class SettingsScreen extends Component {
   }
 
   async resetWallet() {
-    debugger
-    await this.props.saito.storage.resetOptions();
-    debugger
-    this.props.saito.storage.saveOptions();
-    this.props.saitoStore.updateSaitoWallet(this.props.saito);
+    await this.props.saito.storage.resetOptions()
+    await this.props.saito.storage.saveOptions()
+
+    await this.props.saito.reset(Object.assign(this.props.saito.options, config ))
+
+    this.props.navigation.navigate("Home")
   }
 
   importWallet() {
     RNFS.readDir(RNFS.DocumentDirectoryPath + '/SaitoWallet/options')
       .then((result) => {
-        debugger
         console.log('GOT RESULT', result)
-
-        // stat the first file
         return Promise.all([RNFS.stat(result[0].path), result[0].path])
       })
       .then((statResult) => {
-        debugger
         if (statResult[0].isFile()) {
-          // if we have a file, read it
           return RNFS.readFile(statResult[1], 'utf8')
         }
         return 'no file';
       })
-      .then((contents) => {
-        debugger
-        // log the file contents
+      .then(async (contents) => {
         this.props.saito.options = JSON.parse(contents)
-        this.props.saito.storage.saveOptions()
-        this.props.saitoStore.updateSaitoWallet(this.props.saito)
+
+        await this.props.saito.storage.saveOptions()
+        await this.props.saito.reset(Object.assign(this.props.saito.options, config))
         alert('Wallet Import Successful')
       })
       .catch((err) => {
@@ -65,7 +63,6 @@ export default class SettingsScreen extends Component {
   }
 
   async exportWallet() {
-    debugger
     const options_string = JSON.stringify(this.props.saito.options)
     const path = RNFS.DocumentDirectoryPath + '/SaitoWallet/options'
 
@@ -122,7 +119,7 @@ export default class SettingsScreen extends Component {
             <ListItem onPress={() => this.props.navigation.navigate("DefaultFeeSettings")}>
               <Text>Change Default Fee</Text>
             </ListItem>
-            <ListItem>
+            <ListItem onPress={() => this.props.navigation.navigate("RestorePrivateKeySettings")}>
               <Text>Restore From Privatekey</Text>
             </ListItem>
             <ListItem last onPress={() => this.handleResetEvent()}>

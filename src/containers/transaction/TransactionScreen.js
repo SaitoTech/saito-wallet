@@ -59,16 +59,29 @@ export default class TransactionScreen extends Component {
     }
   }
 
+  handleSendTransactionEvent() {
+    if (!this.props.saito.crypto.isPublicKey(this.state.address)) {
+      Alert.alert('Address is not valid, please enter a valid publickey')
+      return
+    }
+
+    if (isNaN(this.state.amt)) {
+      Alert.alert('Amount provided is not a number. Please enter a valid number')
+      return
+    }
+
+    this.sendSaitoTransaction()
+  }
+
   sendSaitoTransaction(new_saito) {
-    var newtx = new_saito.wallet.createUnsignedTransaction(
+    var newtx = this.props.saito.wallet.createUnsignedTransactionWithDefaultFee(
       this.state.address,
       parseFloat(this.state.amt),
-      parseFloat(this.state.fee)
     );
 
-    newtx = new_saito.wallet.signTransaction(newtx);
+    newtx = this.props.saito.wallet.signTransaction(newtx);
 
-    new_saito.network.propagateTransaction(newtx);
+    this.props.saito.network.propagateTransaction(newtx);
     const response = newtx ? 'Your Transaction Has Been Propagated!' : 'Null TX, make sure you have enough funds and your address is correct'
     Alert.alert(response);
 
@@ -96,13 +109,13 @@ export default class TransactionScreen extends Component {
                 onChangeText={(text) => this.setState({address: text})}
                 value={this.state.address}
               />
-              <TextInput
+              {/* <TextInput
                 style={{height: 60, width: 300, fontSize: 24}}
                 keyboardType="numeric"
                 placeholder="Fee"
                 onChangeText={(fee) => this.setState({fee})}
                 value={`${this.state.fee}`}
-              />
+              /> */}
               <TextInput
                 style={{height: 60, width: 300, fontSize: 24}}
                 keyboardType="numeric"
@@ -110,7 +123,7 @@ export default class TransactionScreen extends Component {
                 onChangeText={(amt) => this.setState({amt})}
                 value={`${this.state.amt}`}
               />
-              <Button block dark style={{marginTop: 20, color: '#1c1c23'}} onPress={() => {this.sendSaitoTransaction(this.props.saito)}}>
+              <Button block dark style={{marginTop: 20, color: '#1c1c23'}} onPress={() => {this.handleSendTransactionEvent()}}>
                 <Text>Send</Text>
               </Button>
             </View>

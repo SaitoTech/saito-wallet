@@ -6,11 +6,6 @@ export default class ReactMod extends ModTemplate {
 
     this.name = "ReactMod"
 
-    this.name            = "Registry";
-    this.browser_active  = 0;
-    this.handlesEmail    = 1;
-    this.handlesDNS      = 1;
-
     this.app   = app
     this.props = props
     this.store = store

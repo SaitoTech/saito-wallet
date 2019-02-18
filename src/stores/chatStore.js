@@ -10,18 +10,15 @@ export default class ChatStore {
     this.saito = saito;
   }
 
-  // initialize() {}
-
   @action
   async setChat(chat) {
     this.chat = chat
     this.chat.rooms.replace(this.chat.rooms.slice().sort((a,b) => {
       return JSON.parse(b.messages[b.messages.length - 1].tx).ts - JSON.parse(a.messages[a.messages.length - 1].tx).ts
     }))
-    return this.chat.rooms.map(async (room, idx) => {
+    this.chat.rooms.map(async (room, idx) => {
       room.name = await this.getRoomName(idx);
-      let room_messages = room.messages.map(message => this.importMessage(message))
-      return Promise.all(room_messages)
+      return await Promise.all(room.messages.map(message => this.importMessage(message)))
     })
   }
 
@@ -179,7 +176,6 @@ export default class ChatStore {
   }
 
   _getIdentifier(author) {
-    // use of reject? getAuthor?
     return new Promise((resolve, reject) => {
       this.saito.dns.fetchIdentifier(author, (answer) => {
         author = this.saito.dns.isRecordValid(answer) ?  JSON.parse(answer).identifier : author.substring(0,8);

@@ -41,7 +41,6 @@ export default class SettingsScreen extends Component {
   importWallet() {
     RNFS.readDir(RNFS.DocumentDirectoryPath + '/SaitoWallet/options')
       .then((result) => {
-        console.log('GOT RESULT', result)
         return Promise.all([RNFS.stat(result[0].path), result[0].path])
       })
       .then((statResult) => {

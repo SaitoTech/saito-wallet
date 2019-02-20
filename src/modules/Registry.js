@@ -2,13 +2,13 @@ import {ModTemplate} from 'saito-lib'
 
 
 export default class Registry extends ModTemplate{
-  constructor(saitoStore) {
+  constructor(saito, saitoStore) {
+    super()
+    this.saito = saito
     this.store = saitoStore
   }
 
-  initialize() {
-
-  }
+  // initialize() {}
 
   onConfirmation(blk, tx, conf, app) {
     if (tx == null) { return; }
@@ -22,13 +22,11 @@ export default class Registry extends ModTemplate{
     if (conf == 0) {
       if (tx.transaction.to[0].add == app.wallet.returnPublicKey()) {
         if (txmsg.title == 'Address Registration Success') {
-          this.store.saveIdentifierToWallet()
+          this.store.saveIdentifierToWallet(this.saito)
         }
       }
     }
   }
 
-  handlePeerRequest() {
-
-  }
+  // handlePeerRequest() {}
 }

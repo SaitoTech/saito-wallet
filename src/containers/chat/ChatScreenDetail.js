@@ -120,7 +120,7 @@ export default class ChatScreenDetail extends Component {
     }
     return (
       <View >
-        <Text style={{color: '#a19d9b'}}>{props.currentMessage.user.name}</Text>
+        <Text style={{color: '#a19d9b'}}>{props.currentMessage.user.name.substring(0,20)}</Text>
         <Bubble
           {...props}
         />

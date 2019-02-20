@@ -147,7 +147,8 @@ export default class ChatScreen extends Component {
     this.setState({ addresses });
   }
 
-  onPress(index) {
+  onPress(room_id) {
+    let index = this.props.chatStore.returnRoomIDX(room_id)
     this.props.chatStore.setCurrentRoomIDX(index)
     this.props.chatStore.clearRoomUnreadMessages(index)
     const { navigation } = this.props
@@ -225,7 +226,8 @@ export default class ChatScreen extends Component {
                 var {room_id, last_message} = item
                 var {identifier, avatar} = item.users[0];
 
-                let d = new Date(last_message.timestamp);
+                let d = last_message ? new Date(last_message.timestamp) : new Date()
+                let message = last_message ? last_message.message : ''
                 let hours = ((d.getHours() + 11) % 12 + 1)
                 let am_pm = d.getHours() > 12 ? 'PM' : 'AM'
                 let timestamp = `${hours}:${("0" + d.getMinutes()).substr(-2)} ${am_pm}`
@@ -234,15 +236,14 @@ export default class ChatScreen extends Component {
                 room_name = room_name.slice(0,20)
 
                 return (
-                  // <ListItem avatar onPress={this.onPress.bind(this, index)} style={{ height: 75 }}>
-                  <ListItem avatar onPress={this.onPress.bind(this, index)} style={{ height: 80}}>
+                  <ListItem avatar onPress={this.onPress.bind(this, room_id)} style={{ height: 80}}>
                     <Left>
                       <Thumbnail source={require('../../../assets/img/saito_logo_black.png')}/>
                     </Left>
 
                     <Body style={{height: 80}}>
                       <Text >{room_name}</Text>
-                      <Text note>{last_message.message}</Text>
+                      <Text note>{message}</Text>
                     </Body>
 
                     <Right style={{height: 80}}>

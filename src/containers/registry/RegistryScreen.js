@@ -1,10 +1,15 @@
 import React, {Component} from 'react'
-import { Alert, Text, View } from 'react-native'
+import { Alert, View } from 'react-native'
+
+import { Container, Body, Content, Form, Header, Label, Left, Right, Icon, Input, Item, Title, Button, Text, StyleProvider } from "native-base";
+
+import getTheme from '../../../native-base-theme/components'
+import variables from '../../../native-base-theme/variables/variables'
 
 import {inject} from 'mobx-react'
 
 @inject('saito')
-export default class RegistractionScreen extends Component {
+export default class RegistryScreen extends Component {
   state = {
     requested_identifier: ''
   }
@@ -38,6 +43,7 @@ export default class RegistractionScreen extends Component {
 
 
   sendRequestToNetwork(msg, amount, fee) {
+    const {saito} = this.props
     var newtx = saito.wallet.createUnsignedTransaction(this.publickey, amount, fee);
 
     if (newtx == null) { Alert.alert("Error", "Unable to send TX"); return; }
@@ -49,7 +55,7 @@ export default class RegistractionScreen extends Component {
       if (!err) {
         Alert.alert("Success", "Your registration request has been submitted. Please wait for network confirmation")
         this.setState({requested_identifier: ''})
-        this.props.navigator('Homescreen')
+        this.props.navigator.navigate('Homescreen')
       } else {
         Alert.alert("Error", "There was an error submitting your request to the network. This is an issue with your network connection or wallet")
         this.setState({requested_identifier: ''})
@@ -57,7 +63,7 @@ export default class RegistractionScreen extends Component {
     });
   }
 
-  sendRegisrationRequest() {
+  handleRegisrationRequest() {
     const {saito} = this.props
     var msg = {}
         msg.module               = "Registry"
@@ -84,13 +90,16 @@ export default class RegistractionScreen extends Component {
     //
     // check that this entry is valid
     //
-    var c;
 
     if (saito.dns.isActive() == 0) {
-      c = confirm("You are not connected to a DNS server, so we cannot confirm this address is available. Click OK to try and register it. You will receive a success or failure email from the registration server once the network has processed your request.");
-      if (!c) { return; }
-
-      this.sendRegisrationRequest(msg, amount, fee)
+      Alert.alert(
+        'DNS Error',
+        'You are not connected to a DNS server, so we cannot confirm this address is available. Try to register anyways?',
+        [
+          { text: 'OK', onPress: () => this.sendRequestToNetwork(msg, amount, fee)},
+          { text: 'Cancel' },
+        ]
+      )
 
       return;
     }
@@ -99,15 +108,11 @@ export default class RegistractionScreen extends Component {
       answer = JSON.parse(answer)
       if (answer) {
         if (answer.publickey != "") {
-          c = confirm("This address appears to be registered. If you still want to try registering it, click OK.");
-        } else {
-          c = true;
-        };
+          alert("This address appears to be registered");
+        }
       }
 
-      if (c) {
-        this.sendRequestToNetwork(msg, amount, fee)
-      }
+      this.sendRequestToNetwork(msg, amount, fee)
     });
   }
 
@@ -116,10 +121,10 @@ export default class RegistractionScreen extends Component {
       <Content contentContainerStyle={{ flex: 1, justifyContent: 'center'}}>
         <Form>
           <Item floatingLabel>
-            <Label>Privatekey</Label>
-            <Input onChangeText={(e) => this.setState({ address: e })} />
+            <Label>Requested Identifier</Label>
+            <Input onChangeText={(e) => this.setState({ requested_identifier: e })} />
           </Item>
-          <Button full style={{ margin: 10 }} onPress={() => this.restoreFromPrivateKey()}>
+          <Button dark full style={{ margin: 10 }} onPress={() => this.handleRegisrationRequest()}>
             <Text>Restore</Text>
           </Button>
         </Form>

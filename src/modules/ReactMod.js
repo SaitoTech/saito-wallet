@@ -1,7 +1,7 @@
 import { ModTemplate } from 'saito-lib'
 
 export default class ReactMod extends ModTemplate {
-  constructor(app, props, store) {
+  constructor(props, app, store) {
     super(props);
 
     this.name = "ReactMod"

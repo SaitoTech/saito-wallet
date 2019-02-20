@@ -63,13 +63,16 @@ export default class HomeScreen extends Component {
             marginLeft: 30,
             marginRight: 30,
             }}>
-            <ScrollView style={{backgroundColor: "#F5FCFF", border: '1px black', marginRight: 20}} horizontal={true} >
+            <ScrollView style={{ borderColor: 'rgba(221, 221, 222, 1)', borderRadius: 8, borderStyle: 'solid', borderWidth: 1, marginRight: 20}} horizontal={true} >
               <Text style={styles.instructions}>{this.props.saitoStore.publickey}</Text>
             </ScrollView>
             <TouchableOpacity onPress={() => Clipboard.setString(this.props.saitoStore.publickey)}>
               <Icon style={{fontSize: 35}} name="clipboard"/>
             </TouchableOpacity>
           </View>
+          <Button full style={{marginLeft: 45, marginRight: 45, margin: 10}} onPress={() => this.props.navigation.navigate('Registry')}>
+            <Text>Register ID</Text>
+          </Button>
           {/* <View style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
@@ -113,7 +116,7 @@ export default class HomeScreen extends Component {
             <TouchableOpacity style={styles.module}
               onPress={() => this.props.navigation.navigate('Wallet')}>
               <Icon name="wallet" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
-              <Text style={styles.moduleText}>Wallet</Text>
+              <Text style={styles.moduleText}>Wallet QR</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.module}

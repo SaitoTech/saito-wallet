@@ -14,6 +14,7 @@ export default class ChatStore {
   async setChat(chat) {
     this.chat = chat
     this.chat.rooms.replace(this.chat.rooms.slice().sort((a,b) => {
+      if (b.messages.length > 0 && a.messages.length > 0)
       return JSON.parse(b.messages[b.messages.length - 1].tx).ts - JSON.parse(a.messages[a.messages.length - 1].tx).ts
     }))
     this.chat.rooms.map(async (room, idx) => {
@@ -56,6 +57,7 @@ export default class ChatStore {
     }
   }
 
+  @action
   addUserWithPublickey(publickey, author) {
     if (!this.users[publickey]) {
       this.users[publickey] = ({_id: Object.keys(this.users).length + 1, name: author})
@@ -104,7 +106,7 @@ export default class ChatStore {
   }
 
   @action
-  addMessageToRoom(tx, room_idx) {
+  addMessageToRoom(tx, room_idx) {s
     tx.decryptMessage();
     var txmsg = tx.returnMessage();
     let { room_id, publickey, message, sig } = txmsg
@@ -131,7 +133,7 @@ export default class ChatStore {
         key: (index).toString(),
         room_id: room.room_id,
         unread_messages: room.unread_messages || [],
-        last_message: room.messages[room.messages.length - 1],
+        last_message,
         createdAt: new Date(),
         users: [
           {
@@ -142,7 +144,12 @@ export default class ChatStore {
       }
     })
     cleaned_rooms.sort((a,b) => {
-      return b.last_message.timestamp - a.last_message.timestamp
+      if (b.last_message && a.last_message) {
+        return b.last_message.timestamp - a.last_message.timestamp
+      }
+      // else {
+      //   return JSON.parse(b.last_message.tx).ts - JSON.parse(a.last_message.tx).ts
+      // }
     })
     return cleaned_rooms
   }

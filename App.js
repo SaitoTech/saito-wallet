@@ -15,6 +15,9 @@ import { createStackNavigator, createAppContainer } from "react-navigation";
 // Container Screens
 import HomeScreen from './src/containers/home/HomeScreen.js'
 
+// Registry
+import RegistryScreen from './src/containers/registry/RegistryScreen.js'
+
 // settings screen
 import SettingsScreen from './src/containers/settings/SettingsScreen.js'
 import SettingsWalletScreen from './src/containers/settings/SettingsWalletScreen.js'
@@ -31,6 +34,7 @@ import ChatScreenDetail from './src/containers/chat/ChatScreenDetail.js'
 // Modules
 import ReactMod from './src/modules/ReactMod.js'
 import ChatCore from './src/modules/ChatCore.js'
+import Registry from './src/modules/Registry.js'
 
 import { Provider } from 'mobx-react'
 
@@ -40,6 +44,7 @@ import ChatStore from './src/stores/chatStore'
 const AppNavigator = createStackNavigator(
   {
     Home: HomeScreen,
+    Registry: RegistryScreen,
     Settings: SettingsScreen,
     WalletSettings: SettingsWalletScreen,
     DefaultFeeSettings: SettingsDefaultFeeScreen,
@@ -68,8 +73,9 @@ export default class App extends Component {
   }
 
   async componentWillMount() {
-    this.saito.modules.mods.push(new ReactMod(this.saito, this, this.saitoStore))
+    this.saito.modules.mods.push(new ReactMod(this, this.saito, this.saitoStore))
     this.saito.modules.mods.push(new ChatCore(this.saito, this.chatStore))
+    this.saito.modules.mods.push(new Registry(this.saito, this.saitoStore))
 
     await this.saito.init()
   }

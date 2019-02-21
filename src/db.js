@@ -37,7 +37,11 @@ async function saveOptions() {
 }
 
 async function resetOptions() {
-  let peer = this.app.network.peers[0].peer.endpoint ? this.app.network.peers[0].peer.endpoint : this.app.network.peers[0].peer
+  debugger
+  var peer = this.app.options.peers[0]
+  if (this.app.network.peers[0]) {
+    peer = this.app.network.peers[0].peer.endpoint ? this.app.network.peers[0].peer.endpoint : this.app.network.peers[0].peer
+  }
   var {protocol, host, port} = peer
 
   let tmpdate = new Date().getTime();

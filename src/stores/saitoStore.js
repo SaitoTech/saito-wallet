@@ -15,6 +15,8 @@ export default class SaitoStore {
 
   @action
   updateSaitoWallet(saito) {
+    console.log("BALANCE", saito.wallet.wallet.balance)
+    console.log("PUBLICKEY", saito.wallet.wallet.publickey)
     this.balance = saito.wallet.wallet.balance
     this.publickey = saito.wallet.wallet.publickey
     this.default_fee = saito.wallet.wallet.default_fee

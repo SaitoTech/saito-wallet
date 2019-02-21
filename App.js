@@ -6,6 +6,9 @@
  * @flow
  */
 
+import './shim.js'
+import crypto from 'crypto'
+
 import { Saito } from 'saito-lib';
 import config from './saito.config'
 
@@ -72,12 +75,13 @@ export default class App extends Component {
     this.saitoStore = new SaitoStore(this.saito)
   }
 
-  async componentWillMount() {
+  async componentDidMount() {
     this.saito.modules.mods.push(new ReactMod(this, this.saito, this.saitoStore))
     this.saito.modules.mods.push(new ChatCore(this.saito, this.chatStore))
     this.saito.modules.mods.push(new Registry(this.saito, this.saitoStore))
 
     await this.saito.init()
+    console.log("SAITO", this.saito)
   }
 
   render() {

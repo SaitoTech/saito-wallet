@@ -21,7 +21,6 @@ export default class ChatScreenDetail extends Component {
     super(props)
 
     const { navigation } = this.props
-    this.app           = navigation.getParam('saito', {});
     this.room_name     = navigation.getParam('room_name', {})
   }
 
@@ -82,27 +81,28 @@ export default class ChatScreenDetail extends Component {
 
   _createMessage(chat_room_id, msg) {
     let fee = 0.0
-    let relay_publickey = this.app.network.peers[0].peer.publickey
+    console.log(this.props.saito)
+    let relay_publickey = this.props.saito.network.peers[0].peer.publickey
 
-    let newtx = this.app.wallet.createUnsignedTransaction(relay_publickey, 0.0, fee)
+    let newtx = this.props.saito.wallet.createUnsignedTransaction(relay_publickey, 0.0, fee)
     if (newtx == null) { return; }
 
     newtx.transaction.msg = {
       module: "Chat",
       request: "chat send message",
-      publickey: this.app.wallet.returnPublicKey(),
+      publickey: this.props.saito.wallet.returnPublicKey(),
       room_id: chat_room_id,
-      message: this.app.keys.encryptMessage(this.app.wallet.returnPublicKey(), msg)
+      message: this.props.saito.keys.encryptMessage(this.props.saito.wallet.returnPublicKey(), msg)
     };
 
-    newtx.transaction.msg = this.app.keys.encryptMessage(this.app.wallet.returnPublicKey(), newtx.transaction.msg);
-    newtx.transaction.msg.sig = this.app.wallet.signMessage(msg);
-    newtx = this.app.wallet.signTransaction(newtx);
+    newtx.transaction.msg = this.props.saito.keys.encryptMessage(this.props.saito.wallet.returnPublicKey(), newtx.transaction.msg);
+    newtx.transaction.msg.sig = this.props.saito.wallet.signMessage(msg);
+    newtx = this.props.saito.wallet.signTransaction(newtx);
     return newtx;
   }
 
   _sendMessage(tx) {
-    this.app.network.sendTransactionToPeers(tx, "chat send message");
+    this.props.saito.network.sendTransactionToPeers(tx, "chat send message");
   }
 
   onSend(messages = []) {

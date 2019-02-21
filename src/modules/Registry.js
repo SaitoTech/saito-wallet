@@ -6,6 +6,8 @@ export default class Registry extends ModTemplate{
     super()
     this.saito = saito
     this.store = saitoStore
+
+    this.name = "Registry"
   }
 
   // initialize() {}

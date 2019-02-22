@@ -72,32 +72,33 @@ export default class ChatScreen extends Component {
     this.props.navigation.setParams({ setModalVisible: this.setModalVisible });
   }
 
-  async _addCreateRoomEvent(msg, room_id) {
-    let room_data = this._getRoomDataFromMessage(msg);
-    let { addresses, name } = room_data;
-
+  async _addCreateRoomEvent(addresses) {
+    // let room_data = this._getRoomDataFromMessage(msg);
+    // let { addresses, name } = room_data;
+    // debugger
     let publickeys = addresses.map(async (address) => {
-      if (this.app.crypto.isPublicKey(address)) { return address }
+      // debugger
+      if (this.props.saito.crypto.isPublicKey(address)) { return address }
       else {
-        // try {
-        //   if (address.match(/[@|<>]/)) {
-        //     return await this._getPublicKey(address);
-        //   // } else {
-        //   //   // this is just someone trying to send a message with 'add' at the beginning
-        //   //   this._addSendEvent(msg, room_id);
-        //   }
-        // } catch(err) {
-        //   alert(err);
-        //   return;
-        // }
-        alert("Invalid public key");
+        try {
+          if (address.match(/[@|<>]/)) {
+            return await this.props.chatStore._getPublicKey(address)
+          // } else {
+          //   // this is just someone trying to send a message with 'add' at the beginning
+          //   this._addSendEvent(msg, room_id);
+          }
+        } catch(err) {
+          alert(err)
+          return
+        }
+        Alert.alert("Error","Invalid public key")
       }
     });
+    // debugger
+    return await Promise.all(publickeys);
+    // publickeys.push(this.props.saito.wallet.returnPublicKey());
 
-    publickeys = await Promise.all(publickeys);
-    publickeys.push(this.props.saito.wallet.returnPublicKey());
-
-    this._sendCreateRoomRequest(publickeys, name);
+    // this._sendCreateRoomRequest(publickeys, name);
   }
 
   sendCreateRoomRequest(addresses, name="") {
@@ -121,9 +122,11 @@ export default class ChatScreen extends Component {
     this.props.saito.network.sendRequest("chat request create room", JSON.stringify(newtx.transaction));
   }
 
-  newRoom() {
+  async newRoom() {
     const {new_room_name} = this.state
     let addresses = [...this.state.addresses, this.props.saito.wallet.returnPublicKey()]
+    addresses = await this._addCreateRoomEvent(addresses)
+    debugger
     this.sendCreateRoomRequest(addresses, new_room_name)
     this.setState({ addresses: [''], new_room_name: '' })
     this.setModalVisible(false)

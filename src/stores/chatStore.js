@@ -18,9 +18,22 @@ export default class ChatStore {
       return JSON.parse(b.messages[b.messages.length - 1].tx).ts - JSON.parse(a.messages[a.messages.length - 1].tx).ts
     }))
     this.chat.rooms.map(async (room, idx) => {
+      var fetch_keys = []
       room.name = await this.getRoomName(idx);
+      fetch_keys = room.messages.map(message => this.returnUnidentifiedKeys(message));
+      if (fetch_keys != []) {
+        await this._getMultipleIdentifiers(fetch_keys)
+      }
       return await Promise.all(room.messages.map(message => this.importMessage(message)))
     })
+  }
+
+  returnUnidentifiedKeys(message) {
+    let local_id = this.saito.keys.findByPublicKey(message.author)
+    local_id = local_id ? local_id : { identifiers: [] }
+    if (local_id.identifiers.length == 0) {
+      return message.author
+    }
   }
 
   @action
@@ -31,7 +44,7 @@ export default class ChatStore {
   @action
   async importMessage(message) {
     let publickey = message.author
-    let author = await this.updateUserName(publickey)
+    let author = this.findUsersFromKeys(publickey)
 
     this.addUserWithPublickey(publickey, author)
 
@@ -71,24 +84,11 @@ export default class ChatStore {
     }
   }
 
-  // async findUsersFromKeys(author) {
-  //   let local_id = Object.assign({ identifiers: [] },
-  //     this.app.keys.findByPublicKey(author));
-
-  //   if (local_id.identifiers.length > 0) {
-  //     author = local_id.identifiers[0];
-  //   } else {
-  //     let publickey = author;
-
-  //     try {
-  //       author = await this._getIdentifier(author);
-  //     } catch(err) {
-  //       console.log(err);
-  //     }
-
-  //     this.app.keys.addKey(publickey, message.author);
-  //   }
-  // }
+  findUsersFromKeys(publickey) {
+    let local_id = this.saito.keys.findByPublicKey(publickey)
+    local_id = local_id ? local_id : { identifiers: [] }
+    return local_id.identifiers.length > 0 ? local_id.identifiers[0] : publickey.substring(0,8);
+  }
 
   @action
   addMessage(room_id, newmsg) {
@@ -106,7 +106,7 @@ export default class ChatStore {
   }
 
   @action
-  addMessageToRoom(tx, room_idx) {s
+  addMessageToRoom(tx, room_idx) {
     tx.decryptMessage();
     var txmsg = tx.returnMessage();
     let { room_id, publickey, message, sig } = txmsg
@@ -116,7 +116,6 @@ export default class ChatStore {
     }
 
     let new_message = {id: sig, timestamp: tx.transaction.ts, author: publickey, message}
-
     this.chat.rooms[room_idx].messages.push(new_message);
 
     if (this.currentRoomIDX != room_idx) {
@@ -184,9 +183,36 @@ export default class ChatStore {
 
   _getIdentifier(author) {
     return new Promise((resolve, reject) => {
+      console.log("fetching ID")
       this.saito.dns.fetchIdentifier(author, (answer) => {
+        console.log("FETCHED")
         author = this.saito.dns.isRecordValid(answer) ?  JSON.parse(answer).identifier : author.substring(0,8);
         resolve (author);
+      });
+    });
+  }
+
+  _getMultipleIdentifiers(keys) {
+    return new Promise((resolve, reject) => {
+      this.saito.dns.fetchMultipleIdentifiers(keys, (answer) => {
+        if (this.saito.dns.isRecordValid(answer)) {
+          var response = JSON.parse(answer).payload
+          response.forEach(key => {
+            this.saito.keys.addKey(key.publickey, key.identifier);
+          })
+        }
+        resolve (true);
+      });
+    });
+  }
+
+  _getPublicKey(identifier) {
+    return new Promise((resolve, reject) => {
+      this.saito.dns.fetchPublicKey(identifier, (answer) => {
+        if (!this.saito.dns.isRecordValid(answer)) {
+          reject("We cannot find the public key of that address");
+        }
+        resolve(JSON.parse(answer).publickey);
       });
     });
   }

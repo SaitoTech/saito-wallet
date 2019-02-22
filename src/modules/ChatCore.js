@@ -60,6 +60,7 @@ class ChatCore extends ModTemplate {
 
     switch (req.request) {
       case "chat send message":
+        console.log(req.request)
         var tx = new saito_lib.transaction(req.data);
         if (tx == null) { return; }
         this._receiveMessage(app, tx);

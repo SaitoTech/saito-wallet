@@ -81,7 +81,7 @@ export default class ChatScreenDetail extends Component {
 
   _createMessage(chat_room_id, msg) {
     let fee = 0.0
-    console.log(this.props.saito)
+    // console.log(this.props.saito)
     let relay_publickey = this.props.saito.network.peers[0].peer.publickey
 
     let newtx = this.props.saito.wallet.createUnsignedTransaction(relay_publickey, 0.0, fee)
@@ -120,7 +120,7 @@ export default class ChatScreenDetail extends Component {
     }
     return (
       <View >
-        <Text style={{color: '#a19d9b'}}>{props.currentMessage.user.name.substring(0,20)}</Text>
+        <Text style={{color: '#a19d9b'}}>{props.currentMessage.user.name}</Text>
         <Bubble
           {...props}
         />

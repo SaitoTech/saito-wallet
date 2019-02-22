@@ -20,6 +20,7 @@ export default class ReactMod extends ModTemplate {
   }
 
   onNewBlock(blk, lc) {
+    console.log("WE'RE RUNNING")
     this.store.updateSaitoWallet(this.app)
   }
 

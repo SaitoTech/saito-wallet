@@ -19,7 +19,7 @@ export default class ChatStore {
     }))
     this.chat.rooms.map(async (room, idx) => {
       var fetch_keys = []
-      room.name = await this.getRoomName(idx);
+      room.name = await this.getRoomName(room);
       fetch_keys = room.messages.map(message => this.returnUnidentifiedKeys(message));
       if (fetch_keys != []) {
         await this._getMultipleIdentifiers(fetch_keys)
@@ -92,11 +92,13 @@ export default class ChatStore {
 
   @action
   addMessage(room_id, newmsg) {
-    this.chat.rooms[this.currentRoomIDX].messages.push(newmsg);
+    idx = this.returnRoomIDX(room_id)
+    this.chat.rooms[idx].messages.push(newmsg)
   }
 
   @action
-  addRoom(new_room) {
+  async addRoom(new_room) {
+    new_room.name = await this.getRoomName(new_room)
     this.chat.rooms.push(new_room);
   }
 
@@ -159,20 +161,27 @@ export default class ChatStore {
     return res
   }
 
-  async getRoomName(i) {
-    let { name, addresses } = this.chat.rooms[i];
+  async getRoomName(room) {
+    let { name, addresses } = room
     if (addresses.length == 2) {
       if (name === "") { name = addresses[0] === this.saito.wallet.returnPublicKey() ? addresses[1] : addresses[0] }
     }
     if (this.saito.crypto.isPublicKey(name)) {
-      this.chat.rooms[i].name = await this._getIdentifier(name);
+      //this.chat.rooms[i].name = await this._getIdentifier(name);
+      let id = this.findUsersFromKeys(name)
+      if (id.length != 8) {
+        return id
+      }
+      return await this._getIdentifier(name);
     }
     return name
   }
 
   cleanMessage(message) {
-    this.addUser(message.author)
-    var user = this.users[message.author];
+    let publickey = message.author
+    let id = this.findUsersFromKeys(publickey)
+    this.addUserWithPublickey(publickey, id)
+    var user = this.users[publickey];
     return {
       _id: message.id.toString(),
       text: message.message,
@@ -238,5 +247,12 @@ export default class ChatStore {
 
   findRoom(room_id) {
     if (this.chat.rooms.find(room => room.room_id == room_id)) { return true; }
+  }
+
+  reset() {
+    this.isFetchingChat = false
+    this.chat = { rooms: [] }
+    this.users = {}
+    this.currentRoomIDX = null
   }
 }

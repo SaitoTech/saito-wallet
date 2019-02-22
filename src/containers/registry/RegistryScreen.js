@@ -13,6 +13,11 @@ export default class RegistryScreen extends Component {
   state = {
     requested_identifier: ''
   }
+  publickey = '23ykRYbjvAzHLRaTYPcqjkQ2LnFYeMkg9cJgXPbrWcHmr'
+
+  constructor(props) {
+    super(props)
+  }
 
   static navigationOptions = ({navigation}) => {
     const { params = {} } = navigation.state
@@ -55,7 +60,7 @@ export default class RegistryScreen extends Component {
       if (!err) {
         Alert.alert("Success", "Your registration request has been submitted. Please wait for network confirmation")
         this.setState({requested_identifier: ''})
-        this.props.navigator.navigate('Homescreen')
+        this.props.navigation.navigate('Homescreen')
       } else {
         Alert.alert("Error", "There was an error submitting your request to the network. This is an issue with your network connection or wallet")
         this.setState({requested_identifier: ''})

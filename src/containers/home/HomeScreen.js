@@ -47,6 +47,10 @@ export default class HomeScreen extends Component {
   }
 
   render() {
+    let registry = this.props.saitoStore.identifier != '' ? <Text>{this.props.saitoStore.identifier}</Text>
+                  : <Button full style={{marginLeft: 45, marginRight: 45, margin: 10}} onPress={() => this.props.navigation.navigate('Registry')}>
+                      <Text>Register ID</Text>
+                    </Button>
     return (
       <StyleProvider style={getTheme(variables)}>
         <View style={styles.container}>
@@ -70,9 +74,10 @@ export default class HomeScreen extends Component {
               <Icon style={{fontSize: 35}} name="clipboard"/>
             </TouchableOpacity>
           </View>
-          <Button full style={{marginLeft: 45, marginRight: 45, margin: 10}} onPress={() => this.props.navigation.navigate('Registry')}>
+          {/* <Button full style={{marginLeft: 45, marginRight: 45, margin: 10}} onPress={() => this.props.navigation.navigate('Registry')}>
             <Text>Register ID</Text>
-          </Button>
+          </Button> */}
+          {registry}
           {/* <View style={{
             flexDirection: 'row',
             justifyContent: 'space-around',
@@ -102,9 +107,10 @@ export default class HomeScreen extends Component {
               <Text style={styles.moduleText}>Reddit</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.module}>
-              <Icon name="facebook-square" type={"FontAwesome5"} style={{fontSize: 40}}  color="black" />
-              <Text style={styles.moduleText}>Facebook</Text>
+            <TouchableOpacity style={styles.module}
+              onPress={() => this.props.navigation.navigate('Faucet')}>
+              <Icon name="pay-circle-o1" type={"AntDesign"} style={{fontSize: 40}}  color="black" />
+              <Text style={styles.moduleText}>Faucet</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.module}

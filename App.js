@@ -43,12 +43,14 @@ import { Provider } from 'mobx-react'
 
 import SaitoStore from './src/stores/saitoStore'
 import ChatStore from './src/stores/chatStore'
+import FaucetScreen from './src/containers/faucet/FaucetScreen.js';
 
 const AppNavigator = createStackNavigator(
   {
     Home: HomeScreen,
     Registry: RegistryScreen,
     Settings: SettingsScreen,
+    Faucet: FaucetScreen,
     WalletSettings: SettingsWalletScreen,
     DefaultFeeSettings: SettingsDefaultFeeScreen,
     RestorePrivateKeySettings: SettingsRestorePrivateKeyScreen,

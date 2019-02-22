@@ -59,10 +59,15 @@ export default class TransactionScreen extends Component {
     }
   }
 
-  handleSendTransactionEvent() {
-    if (!this.props.saito.crypto.isPublicKey(this.state.address)) {
-      Alert.alert('Address is not valid, please enter a valid publickey')
-      return
+  async handleSendTransactionEvent() {
+    var publickey = this.state.address
+    if (!this.props.saito.crypto.isPublicKey(publickey)) {
+      try {
+        publickey = await this.props.saito.dns.fetchPublicKeyPromise(publickey)
+      } catch(err) {
+        Alert.alert('err', err)
+        return
+      }
     }
 
     if (isNaN(this.state.amt)) {
@@ -70,12 +75,12 @@ export default class TransactionScreen extends Component {
       return
     }
 
-    this.sendSaitoTransaction()
+    this.sendSaitoTransaction(publickey)
   }
 
-  sendSaitoTransaction(new_saito) {
+  sendSaitoTransaction(publickey) {
     var newtx = this.props.saito.wallet.createUnsignedTransactionWithDefaultFee(
-      this.state.address,
+      publickey,
       parseFloat(this.state.amt),
     );
 
@@ -109,13 +114,6 @@ export default class TransactionScreen extends Component {
                 onChangeText={(text) => this.setState({address: text})}
                 value={this.state.address}
               />
-              {/* <TextInput
-                style={{height: 60, width: 300, fontSize: 24}}
-                keyboardType="numeric"
-                placeholder="Fee"
-                onChangeText={(fee) => this.setState({fee})}
-                value={`${this.state.fee}`}
-              /> */}
               <TextInput
                 style={{height: 60, width: 300, fontSize: 24}}
                 keyboardType="numeric"

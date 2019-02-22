@@ -88,10 +88,10 @@ export default class ChatScreen extends Component {
           //   this._addSendEvent(msg, room_id);
           }
         } catch(err) {
-          alert(err)
+          console.log(err)
+          Alert.alert("Error", "Invalid public key or identifier")
           return
         }
-        Alert.alert("Error","Invalid public key")
       }
     });
     // debugger
@@ -102,6 +102,7 @@ export default class ChatScreen extends Component {
   }
 
   sendCreateRoomRequest(addresses, name="") {
+    debugger
     let to_address = this.props.saito.network.peers[0].peer.publickey
 
     var newtx = this.props.saito.wallet.createUnsignedTransaction(to_address, 0.0, 0.0);
@@ -123,10 +124,10 @@ export default class ChatScreen extends Component {
   }
 
   async newRoom() {
+    debugger
     const {new_room_name} = this.state
     let addresses = [...this.state.addresses, this.props.saito.wallet.returnPublicKey()]
     addresses = await this._addCreateRoomEvent(addresses)
-    debugger
     this.sendCreateRoomRequest(addresses, new_room_name)
     this.setState({ addresses: [''], new_room_name: '' })
     this.setModalVisible(false)

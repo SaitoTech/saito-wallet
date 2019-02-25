@@ -16,3 +16,6 @@ Or on Android
 ```
 react-native run-android
 ```
+
+If you've experiencing issues, make sure to check that `react-native-crypto` has been installed correctly
+https://github.com/tradle/react-native-crypto

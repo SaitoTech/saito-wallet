@@ -1,15 +1,11 @@
 import React, {Component} from 'react'
-import axios from 'axios'
+
 import {
   Alert,
   FlatList,
-  Image,
   Modal,
   StyleSheet,
-  // Text,
   TextInput,
-  TouchableOpacity,
-  TouchableHighlight,
   View
 } from 'react-native'
 
@@ -19,7 +15,6 @@ import variables from '../../../native-base-theme/variables/variables'
 import { Container, Body, Content, Header, List, ListItem, Left, Right, Icon, Input, Item, Title, Thumbnail, Button, Spinner, Text, StyleProvider } from "native-base";
 
 import { observer, inject } from 'mobx-react'
-// import Icon from 'react-native-vector-icons/FontAwesome5';
 
 @inject('saito', 'chatStore')
 @observer
@@ -54,11 +49,15 @@ export default class ChatScreen extends Component {
       header: (
         <StyleProvider style={getTheme(variables)} >
           <Header searchBar rounded>
-            <Icon name="arrow-back" onPress={() => navigation.goBack()} style={{ fontSize: 29, marginLeft: 9, marginRight: 10, color: 'white', alignSelf: 'center'}}/>
-            <Item style={{marginBottom: 8, marginTop: 7}}>
-              <Icon name="ios-search" />
-              <Input placeholder="Search" />
-            </Item>
+            <Icon
+              name="arrow-back"
+              onPress={() => { params.chatStore.updateSearchString(''); navigation.goBack()}}
+              style={{ fontSize: 29, marginLeft: 9, marginRight: 10, color: 'white', alignSelf: 'center'}}
+            />
+              <Item style={{marginBottom: 8, marginTop: 7}}>
+                <Icon name="ios-search" />
+                <Input placeholder="Search" onChangeText={(e) => params.chatStore.updateSearchString(e)}/>
+              </Item>
             <Icon name="camera" type={'MaterialCommunityIcons'} style={{color: 'white', marginLeft: 7, alignSelf: 'center'}} onPress={() => params.onPressScanner()}  />
             <Icon name="ios-add" style={{color: 'white', fontSize: 34, alignSelf: 'center', marginLeft: 17, marginRight: 3}} onPress={() => params.setModalVisible(true)} />
           </Header>
@@ -70,22 +69,16 @@ export default class ChatScreen extends Component {
   componentDidMount() {
     this.props.navigation.setParams({ onPressScanner: this.onPressScanner });
     this.props.navigation.setParams({ setModalVisible: this.setModalVisible });
+    this.props.navigation.setParams({ chatStore: this.props.chatStore });
   }
 
   async _addCreateRoomEvent(addresses) {
-    // let room_data = this._getRoomDataFromMessage(msg);
-    // let { addresses, name } = room_data;
-    // debugger
     let publickeys = addresses.map(async (address) => {
-      // debugger
       if (this.props.saito.crypto.isPublicKey(address)) { return address }
       else {
         try {
           if (address.match(/[@|<>]/)) {
             return await this.props.chatStore._getPublicKey(address)
-          // } else {
-          //   // this is just someone trying to send a message with 'add' at the beginning
-          //   this._addSendEvent(msg, room_id);
           }
         } catch(err) {
           console.log(err)
@@ -94,15 +87,10 @@ export default class ChatScreen extends Component {
         }
       }
     });
-    // debugger
     return await Promise.all(publickeys);
-    // publickeys.push(this.props.saito.wallet.returnPublicKey());
-
-    // this._sendCreateRoomRequest(publickeys, name);
   }
 
   sendCreateRoomRequest(addresses, name="") {
-    debugger
     let to_address = this.props.saito.network.peers[0].peer.publickey
 
     var newtx = this.props.saito.wallet.createUnsignedTransaction(to_address, 0.0, 0.0);
@@ -124,7 +112,6 @@ export default class ChatScreen extends Component {
   }
 
   async newRoom() {
-    debugger
     const {new_room_name} = this.state
     let addresses = [...this.state.addresses, this.props.saito.wallet.returnPublicKey()]
     addresses = await this._addCreateRoomEvent(addresses)
@@ -161,6 +148,7 @@ export default class ChatScreen extends Component {
       saito: this.props.saito,
       room_name: this.props.chatStore.returnCurrentRoomName()
     });
+    this.props.chatStore.updateSearchString('')
   }
 
   render() {

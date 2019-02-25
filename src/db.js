@@ -37,7 +37,6 @@ async function saveOptions() {
 }
 
 async function resetOptions() {
-  debugger
   var peer = this.app.options.peers[0]
   if (this.app.network.peers[0]) {
     peer = this.app.network.peers[0].peer.endpoint ? this.app.network.peers[0].peer.endpoint : this.app.network.peers[0].peer

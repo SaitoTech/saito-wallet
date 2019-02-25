@@ -1,4 +1,3 @@
-import { Saito } from 'saito-lib'
 import config from '../../../saito.config'
 
 import React, {Component} from 'react'
@@ -103,7 +102,6 @@ export default class SettingsScreen extends Component {
       <StyleProvider style={getTheme(variables)}>
         <Container>
           <Content>
-
             <Separator bordered>
               <Text>WALLET</Text>
             </Separator>
@@ -119,13 +117,12 @@ export default class SettingsScreen extends Component {
             <ListItem onPress={() => this.props.navigation.navigate("DefaultFeeSettings")}>
               <Text>Change Default Fee</Text>
             </ListItem>
-            <ListItem onPress={() => this.props.navigation.navigate("RestorePrivateKeySettings")}>
+            {/* <ListItem onPress={() => this.props.navigation.navigate("RestorePrivateKeySettings")}>
               <Text>Restore From Privatekey</Text>
-            </ListItem>
+            </ListItem> */}
             <ListItem last onPress={() => this.handleResetEvent()}>
               <Text style={{color: 'red'}}>Reset Wallet</Text>
             </ListItem>
-
           </Content>
         </Container>
       </StyleProvider>

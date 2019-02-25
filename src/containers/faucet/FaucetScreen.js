@@ -1,9 +1,9 @@
-import React, {Component} from 'react'
-import { Alert, View } from 'react-native'
+import React, { Component } from 'react'
+import { Alert } from 'react-native'
 
 import axios from 'axios'
 
-import { Container, Body, Content, Form, Header, Label, Left, Right, Icon, Input, Item, Title, Button, Text, StyleProvider } from "native-base";
+import { Body, Content, Form, Header, Left, Right, Icon, Input, Item, Title, Button, Text, StyleProvider } from "native-base";
 
 import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
@@ -44,10 +44,14 @@ export default class FaucetScreen extends Component {
 
   sendRequestToNetwork() {
     const {saitoStore, navigation} = this.props
-
-    axios.get(`${saitoStore.getServerURL()}/faucet/success?saito_address=${saitoStore.publickey}`)
-      .then((response) => {
-        debugger
+    axios.get(`${saitoStore.getServerURL()}/faucet/tokens?address=${saitoStore.publickey}`)
+      .then(response => {
+        let {data} = response
+        if (data.error.message) {
+          Alert.alert('Error', `${data.error.message}`)
+        } else {
+          Alert.alert('Faucet', `${data.payload.message}`)
+        }
         navigation.navigate('Home')
       })
       .catch(err => console.log(err))

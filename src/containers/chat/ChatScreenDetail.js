@@ -81,7 +81,6 @@ export default class ChatScreenDetail extends Component {
 
   _createMessage(chat_room_id, msg) {
     let fee = 0.0
-    // console.log(this.props.saito)
     let relay_publickey = this.props.saito.network.peers[0].peer.publickey
 
     let newtx = this.props.saito.wallet.createUnsignedTransaction(relay_publickey, 0.0, fee)

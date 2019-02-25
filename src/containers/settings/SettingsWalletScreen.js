@@ -35,7 +35,6 @@ export default class SettingsWalletScreen extends Component {
   }
 
   render() {
-    const {navigation} = this.props
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container>
@@ -59,14 +58,13 @@ export default class SettingsWalletScreen extends Component {
               </Right>
             </ListItem>
             <ListItem last>
-              <Left>
-                <Text>Identifier</Text>
-              </Left>
-              <Body>
-                <Text note>
-                  { this.props.saito.wallet.returnIdentifier() ? this.props.saito.wallet.returnIdentifier() : "You have not signed up for a name yet" }
-                </Text>
-              </Body>
+              <Text>Identifier</Text>
+              <Text note style={{marginLeft: 20, overflow: 'hidden'}}>
+                { this.props.saito.wallet.returnIdentifier() ? this.props.saito.wallet.returnIdentifier() : "You have not signed up for a name yet" }
+              </Text>
+              <Right style={{flex: 1}}>
+                <Icon name={"clipboard"} onPress={() => Clipboard.setString(this.props.saitoStore.publickey)}/>
+              </Right>
             </ListItem>
           </Content>
         </Container>

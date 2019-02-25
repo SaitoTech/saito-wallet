@@ -4,7 +4,9 @@ export default class ChatStore {
   @observable isFetchingChat = false
   @observable chat = { rooms: [] }
   @observable users = {}
+  @observable search_string = ''
   currentRoomIDX = null
+
 
   constructor(saito) {
     this.saito = saito;
@@ -84,6 +86,11 @@ export default class ChatStore {
     }
   }
 
+  @action
+  updateSearchString(e) {
+    this.search_string = e.toLocaleLowerCase()
+  }
+
   findUsersFromKeys(publickey) {
     let local_id = this.saito.keys.findByPublicKey(publickey)
     local_id = local_id ? local_id : { identifiers: [] }
@@ -124,11 +131,15 @@ export default class ChatStore {
       if (!this.chat.rooms[room_idx].unread_messages) { this.chat.rooms[room_idx].unread_messages = [] }
       this.chat.rooms[room_idx].unread_messages = [...this.chat.rooms[room_idx].unread_messages, new_message]
     }
-    console.log("New Message Added inside the store");
   }
 
   @computed get cleanRoomsForGiftedChat() {
-    var cleaned_rooms = this.chat.rooms.map((room, index) => {
+    var cleaned_rooms = this.chat.rooms
+    .filter(room => {
+      lowercase_room_name = room.name.toLocaleLowerCase()
+      if (!lowercase_room_name.includes(this.search_string)) { return false } else { return true }
+    })
+    .map((room, index) => {
       let last_message = room.messages[room.messages.length - 1]
       return {
         key: (index).toString(),
@@ -148,9 +159,6 @@ export default class ChatStore {
       if (b.last_message && a.last_message) {
         return b.last_message.timestamp - a.last_message.timestamp
       }
-      // else {
-      //   return JSON.parse(b.last_message.tx).ts - JSON.parse(a.last_message.tx).ts
-      // }
     })
     return cleaned_rooms
   }
@@ -167,7 +175,6 @@ export default class ChatStore {
       if (name === "") { name = addresses[0] === this.saito.wallet.returnPublicKey() ? addresses[1] : addresses[0] }
     }
     if (this.saito.crypto.isPublicKey(name)) {
-      //this.chat.rooms[i].name = await this._getIdentifier(name);
       let id = this.findUsersFromKeys(name)
       if (id.length != 8) {
         return id
@@ -192,9 +199,7 @@ export default class ChatStore {
 
   _getIdentifier(author) {
     return new Promise((resolve, reject) => {
-      console.log("fetching ID")
       this.saito.dns.fetchIdentifier(author, (answer) => {
-        console.log("FETCHED")
         author = this.saito.dns.isRecordValid(answer) ?  JSON.parse(answer).identifier : author.substring(0,8);
         resolve (author);
       });

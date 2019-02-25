@@ -6,7 +6,6 @@ import {
   Image,
   ScrollView,
   StyleSheet,
-  TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
@@ -32,7 +31,6 @@ export default class HomeScreen extends Component {
         <StyleProvider style={getTheme(variables)} >
           <Header style={{ backgroundColor: '#E7584B'}}>
             <Left style={{flex: 1}}>
-              <Icon name="menu" style={{color: 'white', fontSize: 28}} onPress={() => console.log("Settings pressed")} />
             </Left>
             <Body style={{flex: 1, alignItems: 'center'}}>
               <Title>Saito Wallet</Title>
@@ -48,7 +46,7 @@ export default class HomeScreen extends Component {
 
   render() {
     let registry = this.props.saitoStore.identifier != '' ? <Text>{this.props.saitoStore.identifier}</Text>
-                  : <Button full style={{marginLeft: 45, marginRight: 45, margin: 10}} onPress={() => this.props.navigation.navigate('Registry')}>
+                  : <Button full style={{marginLeft: 40, marginRight: 40, margin: 10}} onPress={() => this.props.navigation.navigate('Registry')}>
                       <Text>Register ID</Text>
                     </Button>
     return (
@@ -64,8 +62,8 @@ export default class HomeScreen extends Component {
             justifyContent: 'space-between',
             height: 40,
             margin: 15,
-            marginLeft: 30,
-            marginRight: 30,
+            marginLeft: 40,
+            marginRight: 40,
             }}>
             <ScrollView style={{ borderColor: 'rgba(221, 221, 222, 1)', borderRadius: 8, borderStyle: 'solid', borderWidth: 1, marginRight: 20}} horizontal={true} >
               <Text style={styles.instructions}>{this.props.saitoStore.publickey}</Text>
@@ -74,21 +72,7 @@ export default class HomeScreen extends Component {
               <Icon style={{fontSize: 35}} name="clipboard"/>
             </TouchableOpacity>
           </View>
-          {/* <Button full style={{marginLeft: 45, marginRight: 45, margin: 10}} onPress={() => this.props.navigation.navigate('Registry')}>
-            <Text>Register ID</Text>
-          </Button> */}
           {registry}
-          {/* <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          }}>
-            <Button dark style={{ margin: 15 }} onPress={() => console.log("Wallet Reset")}>
-              <Text style={{fontFamily: 'Titillium Web'}}>Save Wallet</Text>
-            </Button>
-            <Button dark style={{ margin: 15 }} onPress={() => console.log("Import Wallet")}>
-              <Text style={{fontFamily: 'Titillium Web'}}>Import Wallet</Text>
-            </Button>
-          </View> */}
           <Text style={styles.moduleHeader}>MODULES</Text>
           <View style={{
             flex: 2,
@@ -97,14 +81,10 @@ export default class HomeScreen extends Component {
             justifyContent: 'space-between',
             marginBottom: 15
           }}>
-            <TouchableOpacity style={styles.module}>
-              <Icon name="envelope" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
-              <Text style={styles.moduleText}>Email</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.module}>
-              <Icon name="reddit-alien" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
-              <Text style={styles.moduleText}>Reddit</Text>
+            <TouchableOpacity style={styles.module}
+              onPress={() => this.props.navigation.navigate('Chat')}>
+              <Icon name="chatboxes" style={{fontSize: 40}} color="black" />
+              <Text style={styles.moduleText}>Chat</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.module}
@@ -126,10 +106,17 @@ export default class HomeScreen extends Component {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.module}
-              onPress={() => this.props.navigation.navigate('Chat')}>
-              <Icon name="chatboxes" style={{fontSize: 40}} color="black" />
-              <Text style={styles.moduleText}>Chat</Text>
+              onPress={() => Alert.alert('Coming Soon!')}>
+              <Icon name="envelope" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
+              <Text style={styles.moduleText}>Email</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.module}
+              onPress={() => Alert.alert('Coming Soon!')}>
+              <Icon name="reddit-alien" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
+              <Text style={styles.moduleText}>Dreddit</Text>
+            </TouchableOpacity>
+
           </View>
         </View>
       </StyleProvider>

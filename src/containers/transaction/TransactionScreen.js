@@ -1,14 +1,12 @@
 import React, { Component } from 'react'
 import {
-  Alert,
-  TextInput,
-  View
+  Alert
 } from 'react-native'
 
 import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
 
-import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
+import { Container, Body, Content, Header, Form, Left, Right, Icon, Item, Input, Label, Title, Button, Text, StyleProvider } from "native-base";
 import { inject } from 'mobx-react';
 
 @inject('saito', 'saitoStore')
@@ -101,30 +99,36 @@ export default class TransactionScreen extends Component {
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container>
-          <Content>
-            <View style={{ flex: 1, alignItems: "center", margin: 5,  marginLeft: 28, marginRight: 28}}>
-              <Text style={{
+          <Content contentContainerStyle={{ flex: 1}}>
+            <Text
+              adjustsFontSizeToFit={true}
+              numberOfLines={1}
+              style={{
                 fontFamily: 'Titillium Web',
                 fontSize: 48,
-                textAlign: 'left'
+                textAlign: 'right',
+                marginRight: 10,
               }}>{this.props.saitoStore.balance}</Text>
-              <TextInput
-                style={{height: 60, width: 300, fontSize: 24}}
-                placeholder="To Address"
-                onChangeText={(text) => this.setState({address: text})}
-                value={this.state.address}
-              />
-              <TextInput
-                style={{height: 60, width: 300, fontSize: 24}}
-                keyboardType="numeric"
-                placeholder="Amount"
-                onChangeText={(amt) => this.setState({amt})}
-                value={`${this.state.amt}`}
-              />
-              <Button block dark style={{marginTop: 20, color: '#1c1c23'}} onPress={() => {this.handleSendTransactionEvent()}}>
+            <Form>
+              <Item>
+                <Label>Address</Label>
+                <Input
+                  onChangeText={(text) => this.setState({address: text})}
+                  value={this.state.address}
+                />
+              </Item>
+              <Item>
+                <Label>Amount</Label>
+                <Input
+                  keyboardType="numeric"
+                  onChangeText={(amt) => this.setState({amt})}
+                  value={this.state.amt}
+                />
+              </Item>
+              <Button block dark style={{margin: 10, color: '#1c1c23'}} onPress={() => {this.handleSendTransactionEvent()}}>
                 <Text>Send</Text>
               </Button>
-            </View>
+            </Form>
           </Content>
         </Container>
       </StyleProvider>

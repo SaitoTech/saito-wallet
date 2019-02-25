@@ -1,5 +1,5 @@
 import React, {Component} from 'react'
-import { Alert, View } from 'react-native'
+import { Alert } from 'react-native'
 
 import { Container, Body, Content, Form, Header, Label, Left, Right, Icon, Input, Item, Title, Button, Text, StyleProvider } from "native-base";
 
@@ -34,11 +34,10 @@ export default class RegistryScreen extends Component {
             </Left>
             <Body style={{flex: 1, alignItems: 'center'}}>
               <Title>
-                Restore
+                Request ID
               </Title>
             </Body>
             <Right style={{flex: 1}}>
-              <Icon name='camera' style={{color: 'white'}} onPress={() => params.onPress()} />
             </Right>
           </Header>
         </StyleProvider>
@@ -123,14 +122,15 @@ export default class RegistryScreen extends Component {
 
   render() {
     return (
-      <Content contentContainerStyle={{ flex: 1, justifyContent: 'center'}}>
+      <Content contentContainerStyle={{ flex: 1}}>
         <Form>
-          <Item floatingLabel>
-            <Label>Requested Identifier</Label>
+          <Item >
+            <Label>Identifier</Label>
             <Input onChangeText={(e) => this.setState({ requested_identifier: e })} />
+            <Text color='grey' style={{marginRight: 10}}>@saito</Text>
           </Item>
           <Button dark full style={{ margin: 10 }} onPress={() => this.handleRegisrationRequest()}>
-            <Text>Restore</Text>
+            <Text>Submit</Text>
           </Button>
         </Form>
       </Content>

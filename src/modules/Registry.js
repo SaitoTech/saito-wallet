@@ -27,16 +27,6 @@ export default class Registry extends ModTemplate{
       if (txmsg.module != "Email") { return; }
 
 
-      // if (conf == 0) {
-      //   if (tx.transaction.to[0].add == app.wallet.returnPublicKey()) {
-      //     console.log("ARE WE HERE?")
-      //     if (txmsg.title == 'Address Registration Success!') {
-      //       this.store.saveIdentifierToWallet(this.saito)
-      //     }
-      //   }
-      // }
-
-      // if (txmsg.module == "Email") {
       if (txmsg.sig === undefined) { return; }
       if (txmsg.sig == "") { return; }
 
@@ -44,9 +34,6 @@ export default class Registry extends ModTemplate{
 
       var registry_self = app.modules.returnModule("Registry");
 
-      //
-      // browser can update itself
-      //
       if (tx.transaction.to[0].add == app.wallet.returnPublicKey()) {
 
         let sigsplit = sig.replace(/\n/g, '').split("\t");

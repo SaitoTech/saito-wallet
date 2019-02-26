@@ -13,6 +13,7 @@ import { Saito } from 'saito-lib';
 import config from './saito.config'
 
 import React, {Component} from 'react';
+import { AppState } from "react-native";
 import { createStackNavigator, createAppContainer } from "react-navigation";
 
 // Container Screens
@@ -23,6 +24,9 @@ import RegistryScreen from './src/containers/registry/RegistryScreen.js'
 
 // settings screen
 import SettingsScreen from './src/containers/settings/SettingsScreen.js'
+import SettingsPeersScreen from './src/containers/settings/SettingsPeersScreen.js'
+import SettingsDNSScreen from './src/containers/settings/SettingsDNSScreen.js'
+
 import SettingsWalletScreen from './src/containers/settings/SettingsWalletScreen.js'
 import SettingsDefaultFeeScreen from './src/containers/settings/SettingsDefaultFeeScreen.js'
 import SettingsRestorePrivateKeyScreen from './src/containers/settings/SettingsRestorePrivateKeyScreen.js'
@@ -51,6 +55,8 @@ const AppNavigator = createStackNavigator(
     Registry: RegistryScreen,
     Settings: SettingsScreen,
     Faucet: FaucetScreen,
+    PeerSettings: SettingsPeersScreen,
+    DNSSettings: SettingsDNSScreen,
     WalletSettings: SettingsWalletScreen,
     DefaultFeeSettings: SettingsDefaultFeeScreen,
     RestorePrivateKeySettings: SettingsRestorePrivateKeyScreen,
@@ -75,15 +81,35 @@ export default class App extends Component {
 
     this.chatStore = new ChatStore(this.saito)
     this.saitoStore = new SaitoStore(this.saito)
+
+    this.state = {
+      appState: AppState.currentState,
+    }
   }
 
   async componentDidMount() {
+    AppState.addEventListener('change', this._handleAppStateChange);
+
     this.saito.modules.mods.push(new ReactMod(this, this.saito, this.saitoStore))
     this.saito.modules.mods.push(new ChatCore(this.saito, this.chatStore))
     this.saito.modules.mods.push(new Registry(this.saito, this.saitoStore))
 
     await this.saito.init()
     console.log("SAITO", this.saito)
+  }
+
+  componentWillUnmount() {
+    AppState.removeEventListener('change', this._handleAppStateChange);
+  }
+
+  _handleAppStateChange = (nextAppState) => {
+    if (
+      this.state.appState.match(/inactive|background/) &&
+      nextAppState === 'active'
+    ) {
+      this.saito.reset(Object.assign(this.saito.options, config))
+    }
+    this.setState({appState: nextAppState});
   }
 
   render() {

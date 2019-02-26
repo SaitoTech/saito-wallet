@@ -10,7 +10,7 @@ import { observer, inject } from 'mobx-react'
 
 @inject('saito', 'saitoStore')
 @observer
-export default class SettingsWalletScreen extends Component {
+export default class SettingsPeersScreen extends Component {
 
   static navigationOptions = ({navigation}) => {
     return {
@@ -24,46 +24,51 @@ export default class SettingsWalletScreen extends Component {
             </Left>
             <Body style={{flex: 1, alignItems: 'center'}}>
               <Title>
-                Wallet Keys
+                Peers
               </Title>
             </Body>
-            <Right style={{flex: 1}}/>
+            <Right style={{flex: 1}}>
+              <Icon style={{color: 'white'}} name={"clipboard"} onPress={() => Clipboard.setString(this.returnPeerEndpoint())}/>
+            </Right>
           </Header>
         </StyleProvider>
       )
     }
   }
 
+  returnPeerEndpoint() {
+    let {protocol, host, port} = this.props.saito.network.peers[0].peer.endpoint
+    return `${protocol}://${host}:${port}`
+  }
+
   render() {
+    let {protocol, host, port} = this.props.saito.network.peers[0].peer.endpoint
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container>
           <Content>
             <ListItem>
-              <Text>Publickey</Text>
-              <Text note style={{marginLeft: 13, overflow: 'hidden' }}>
-                {`${this.props.saitoStore.publickey.substring(0,26)}...`}
-              </Text>
+              <Text>Protocol</Text>
+                <Text note style={{marginLeft: 13, overflow: 'hidden' }}>
+                  {protocol}
+                </Text>
               <Right style={{flex: 1}}>
-                <Icon name={"clipboard"} onPress={() => Clipboard.setString(this.props.saitoStore.publickey)}/>
               </Right>
             </ListItem>
             <ListItem onPress={() => alert(this.props.saito.wallet.returnPrivateKey())}>
-              <Text>Privatekey</Text>
-              <Text note password={true} style={{marginLeft: 10, overflow: 'hidden' }}>
-                {`${this.props.saito.wallet.returnPrivateKey().substring(0,26)}...`}
-              </Text>
+                <Text>Host</Text>
+                <Text note password={true} style={{marginLeft: 10, overflow: 'hidden' }}>
+                  {host}
+                </Text>
               <Right style={{flex:1}}>
-                <Icon name={"clipboard"} onPress={() => Clipboard.setString(this.props.saito.wallet.returnPrivateKey())}/>
               </Right>
             </ListItem>
             <ListItem last>
-              <Text>Identifier</Text>
-              <Text note style={{marginLeft: 20, overflow: 'hidden'}}>
-                { this.props.saito.wallet.returnIdentifier() ? this.props.saito.wallet.returnIdentifier() : "You have not signed up for a name yet" }
-              </Text>
+                <Text>Identifier</Text>
+                <Text note style={{marginLeft: 20, overflow: 'hidden'}}>
+                  {port}
+                </Text>
               <Right style={{flex: 1}}>
-                <Icon name={"clipboard"} onPress={() => Clipboard.setString(this.props.saitoStore.identifier)}/>
               </Right>
             </ListItem>
           </Content>

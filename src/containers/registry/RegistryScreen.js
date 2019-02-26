@@ -59,7 +59,7 @@ export default class RegistryScreen extends Component {
       if (!err) {
         Alert.alert("Success", "Your registration request has been submitted. Please wait for network confirmation")
         this.setState({requested_identifier: ''})
-        this.props.navigation.navigate('Homescreen')
+        this.props.navigation.navigate('Home')
       } else {
         Alert.alert("Error", "There was an error submitting your request to the network. This is an issue with your network connection or wallet")
         this.setState({requested_identifier: ''})

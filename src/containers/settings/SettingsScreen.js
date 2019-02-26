@@ -123,6 +123,18 @@ export default class SettingsScreen extends Component {
             <ListItem last onPress={() => this.handleResetEvent()}>
               <Text style={{color: 'red'}}>Reset Wallet</Text>
             </ListItem>
+            <Separator bordered>
+              <Text>PEERS</Text>
+            </Separator>
+            <ListItem last onPress={()=> this.props.navigation.navigate("PeerSettings")}>
+              <Text>Peer Options</Text>
+            </ListItem>
+            <Separator bordered>
+              <Text>DNS</Text>
+            </Separator>
+            <ListItem last onPress={()=> this.props.navigation.navigate("DNSSettings")}>
+              <Text>DNS Options</Text>
+            </ListItem>
           </Content>
         </Container>
       </StyleProvider>

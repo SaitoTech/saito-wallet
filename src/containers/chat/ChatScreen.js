@@ -30,7 +30,15 @@ export default class ChatScreen extends Component {
   }
 
   onSelect = data => {
-    this.setState(Object.assign(this.state, data));
+    debugger
+    let addresses
+    if (this.state.addresses.length > 1) {
+      addresses = [...this.state.addresses, data.address]
+    } else {
+      addresses = [data.address]
+    }
+    this.setState({addresses});
+    this.setState({modalVisible: true})
   };
 
   setModalVisible = (visible) => {

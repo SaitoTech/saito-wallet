@@ -93,6 +93,8 @@ export default class TransactionScreen extends Component {
       fee: '',
       amt: ''
     })
+
+    this.props.navigation.navigate("Home")
   }
 
   render() {

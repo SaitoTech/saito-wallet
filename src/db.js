@@ -47,6 +47,8 @@ async function resetOptions() {
   let loadurl = `/options?x=${tmpdate}`;
 
   try {
+    // needs to also get rid of firebase token
+    // await AsyncStorage.removeItem(`fcmToken`)
     await AsyncStorage.removeItem(`@SaitoWallet:options`)
     var response = await axios.get(`${protocol}://${host}:${port}${loadurl}`)
     this.app.options = response.data

@@ -30,21 +30,22 @@ class ChatCore extends ModTemplate {
 
   initialize() {
     // start fecthing chat
-    let publickey = this.app.wallet.returnPublicKey()
-    this.store.addUser(publickey)
-    this.store.setLoadingChat(true)
+    // let publickey = this.app.wallet.returnPublicKey()
+    // this.store.addUser(publickey)
+    // this.store.setLoadingChat(true)
 
-    axios.get(`${this._getChatURL()}/chat/${publickey}`)
-      .then(async (response) => {
-        await this.store.setChat(response.data)
-        this.store.setLoadingChat(false)
-      })
-      .catch(err => console.log(err))
+    // axios.get(`${this._getChatURL()}/chat/${publickey}`)
+    //   .then(async (response) => {
+    //     await this.store.setChat(response.data)
+    //     this.store.setLoadingChat(false)
+    //   })
+    //   .catch(err => console.log(err))
+    this.store.fetchChat()
   }
 
-  _getChatURL() {
-    return `${this.server.protocol}://${this.server.host}:${this.server.port}`
-  }
+  // _getChatURL() {
+  //   return `${this.server.protocol}://${this.server.host}:${this.server.port}`
+  // }
 
   ///////////////////////
   // handlePeerRequest //
@@ -60,7 +61,6 @@ class ChatCore extends ModTemplate {
 
     switch (req.request) {
       case "chat send message":
-        console.log(req.request)
         var tx = new saito_lib.transaction(req.data);
         if (tx == null) { return; }
         this._receiveMessage(app, tx);

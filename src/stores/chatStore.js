@@ -1,3 +1,5 @@
+import axios from 'axios'
+import {AsyncStorage} from 'react-native'
 import { observable, computed, action } from 'mobx'
 
 export default class ChatStore {
@@ -7,9 +9,60 @@ export default class ChatStore {
   @observable search_string = ''
   currentRoomIDX = null
 
+  server = {
+    host: "apps.saito.network",
+    port: 443,
+    protocol: "https"
+  }
+
 
   constructor(saito) {
     this.saito = saito;
+  }
+
+  roomReducer = (accumulator, room) => {
+    return accumulator + room.messages.length
+  }
+
+  async fetchChat() {
+    // start fecthing chat
+    let publickey = this.saito.wallet.returnPublicKey()
+    this.addUser(publickey)
+    this.setLoadingChat(true)
+
+    // var chat = JSON.parse(await AsyncStorage.getItem('chat'))
+
+    // if (chat) {
+    //   await this.setChat(JSON.parse(JSON.stringify(this.chat)))
+    //   this.setLoadingChat(false)
+    //   this.saveChat(JSON.parse(JSON.stringify(this.chat)))
+    // }
+
+    try {
+      var response = await axios.get(`${this._getServerURL()}/chat/${publickey}`)
+      // var current_chat_length = 0
+      // var fetched_chat_length = 0
+
+      // if (chat.rooms) {
+      //   current_chat_length = chat.rooms.reduce(this.roomReducer)
+      // }
+      // if (response.data.rooms) {
+      //   fetched_chat_length = response.data.rooms.reduce(this.roomReducer)
+      // }
+
+      // if (current_chat_length != fetched_chat_length) {
+      await this.setChat(JSON.parse(JSON.stringify(response.data)))
+      this.setLoadingChat(false)
+      this.saveChat(JSON.parse(JSON.stringify(response.data)))
+      // }
+      // return
+    } catch(err) {
+      console.log(err)
+    }
+  }
+
+  _getServerURL() {
+    return `${this.server.protocol}://${this.server.host}:${this.server.port}`
   }
 
   @action
@@ -259,5 +312,9 @@ export default class ChatStore {
     this.chat = { rooms: [] }
     this.users = {}
     this.currentRoomIDX = null
+  }
+
+  async saveChat(chat) {
+    await AsyncStorage.setItem('chat', JSON.stringify(chat))
   }
 }

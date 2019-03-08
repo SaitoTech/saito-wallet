@@ -126,7 +126,7 @@ export default class HomeScreen extends Component {
               </TouchableOpacity>
 
               <TouchableOpacity style={styles.module}
-                onPress={() => Alert.alert('Coming Soon!')}>
+                onPress={() => this.props.navigation.navigate('Email')}>
                 <Icon name="envelope" type={"FontAwesome5"} style={{fontSize: 40}} color="black" />
                 <Text style={styles.moduleText}>Email</Text>
               </TouchableOpacity>

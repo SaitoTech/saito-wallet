@@ -32,8 +32,9 @@ export default class SettingsScreen extends Component {
     await this.props.saito.storage.resetOptions()
     await this.props.saito.storage.saveOptions()
 
-    this.props.chatStore.reset()
+    await this.props.chatStore.reset()
     await this.props.saito.reset(Object.assign(this.props.saito.options, config))
+    await this.props.saitoStore.reset()
 
     this.props.navigation.navigate("Home")
   }

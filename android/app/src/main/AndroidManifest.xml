@@ -10,6 +10,7 @@
       android:name=".MainApplication"
       android:label="@string/app_name"
       android:icon="@mipmap/ic_launcher"
+      android:roundIcon="@mipmap/ic_launcher_round"
       android:allowBackup="false"
       android:theme="@style/AppTheme">
       <activity
@@ -30,6 +31,16 @@
         </intent-filter>
       </service>
       <service android:name="io.invertase.firebase.messaging.RNFirebaseBackgroundMessagingService" />
+
+      <meta-data
+        android:name="com.google.firebase.messaging.default_notification_icon"
+        android:resource="@drawable/saito_logo_black" />
+
+      <!-- Set color used with incoming notification messages. This is used when no color is set for the incoming
+        notification message. See README(https://goo.gl/6BKBk7) for more. -->
+      <meta-data
+        android:name="com.google.firebase.messaging.default_notification_color"
+        android:resource="@color/saitoCoral" />
     </application>
 
 </manifest>

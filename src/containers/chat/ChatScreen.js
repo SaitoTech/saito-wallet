@@ -150,12 +150,13 @@ export default class ChatScreen extends Component {
     let index = this.props.chatStore.returnRoomIDX(room_id)
     this.props.chatStore.setCurrentRoomIDX(index)
     this.props.chatStore.clearRoomUnreadMessages(index)
+
     const { navigation } = this.props
+
     navigation.navigate('ChatDetail', {
-      wallet: this.props.saito.wallet,
-      saito: this.props.saito,
       room_name: this.props.chatStore.returnCurrentRoomName()
     });
+
     this.props.chatStore.updateSearchString('')
   }
 
@@ -233,7 +234,7 @@ export default class ChatScreen extends Component {
                 let timestamp = `${hours}:${("0" + d.getMinutes()).substr(-2)} ${am_pm}`
 
                 let room_name = item.unread_messages.length > 0 ? `${identifier} (${item.unread_messages.length})` : identifier
-                room_name = room_name.slice(0,20)
+                room_name = room_name.slice(0,30)
 
                 return (
                   <ListItem avatar onPress={this.onPress.bind(this, room_id)} style={{ height: 80}}>

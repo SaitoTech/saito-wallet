@@ -1,6 +1,6 @@
 import React, {Component} from 'react'
 
-import {View} from 'react-native'
+import {Alert, View} from 'react-native'
 import { Container, Body, Content, Header, ListItem, Left, Right, Icon, Item, Title, H1, H2, Button, Separator, Text, StyleProvider, Footer } from "native-base";
 
 import getTheme from '../../../native-base-theme/components'
@@ -16,11 +16,12 @@ export default class EmailDetailScreen extends Component {
     super(props)
 
     const { navigation } = this.props
-    let email_idx = navigation.getParam('email_idx', {})
-    this.email = this.props.emailStore.emails[email_idx]
+    this.email_id = navigation.getParam('id', {})
+    this.email = this.props.emailStore.returnDetailedEmail(this.email_id)
   }
 
   static navigationOptions = ({navigation}) => {
+    const { params = {} } = navigation.state;
     return {
       header: (
         <StyleProvider style={getTheme(variables)} >
@@ -33,9 +34,21 @@ export default class EmailDetailScreen extends Component {
             <Body style={{flex: 1, alignItems: 'center'}}>
             </Body>
             <Right style={{flex: 1, justifyContent: 'space-between'}}>
-              <Icon name="archive" style={{color: 'white'}}/>
-              <Icon name="trash" style={{color: 'white'}}/>
-              <Icon name="kebab-vertical" style={{color: 'white'}} type={'Octicons'}/>
+              <Icon
+                name="mail-reply"
+                type='FontAwesome'
+                style={{color: 'white'}}
+                onPress={() => params.createReplyEmail()}/>
+              <Icon
+                name="mail-forward"
+                type='FontAwesome'
+                style={{color: 'white'}}
+                onPress={() => params.createForwardEmail()}/>
+              <Icon
+                name="trash"
+                style={{color: 'white'}}
+                onPress={() => { params.onDelete() }}
+                />
             </Right>
           </Header>
         </StyleProvider>
@@ -43,10 +56,36 @@ export default class EmailDetailScreen extends Component {
     }
   }
 
+  componentDidMount() {
+    this.props.navigation.setParams({
+      onDelete: this.onDelete,
+      createReplyEmail: this.createReplyEmail,
+      createForwardEmail: this.createForwardEmail,
+    });
+  }
+
+  onDelete = () => {
+    console.log("DOES THIS GET TRIGGERED?")
+    this.props.emailStore.deleteEmail(this.email_id)
+    Alert.alert('Success', "Email deleted")
+    this.props.navigation.goBack()
+  }
+
+  createReplyEmail = () => {
+    this.props.navigation.navigate('EmailCompose', {
+      to: this.email.from,
+      title: `Re: [${this.email.title}]`
+    })
+  }
+
+  createForwardEmail = () => {
+    this.props.navigation.navigate('EmailCompose', {
+      title: `Fwd: [${this.email.title}]`
+    })
+  }
+
   render() {
     var {id, time, from, to, module, title, data, markdown, attachments} = this.email
-
-    // let message = last_message ? last_message.message : ''
 
     let d = new Date(time)
     let hours = ((d.getHours() + 11) % 12 + 1)
@@ -83,14 +122,18 @@ export default class EmailDetailScreen extends Component {
               </Text>
             </View>
           </Content>
-          <Footer contentContainerStyle={{flex: 1, justifyContent: 'space-around', backgroundColor: 'white'}}>
-            <Button bordered dark style={{height: '100%', width: '35%', justifyContent: 'center', marginLeft: 5, marginRight: 5}}>
+          {/* <Footer contentContainerStyle={{flex: 1, justifyContent: 'space-around', backgroundColor: 'white'}}>
+            <Button bordered dark
+              style={{height: '100%', width: '35%', justifyContent: 'center', marginLeft: 5, marginRight: 5}}
+              onPress={() => this.createReplyEmail()}>
               <Icon name="mail-reply" type='FontAwesome' style={{color: 'black', fontSize: 27}}/>
             </Button>
-            <Button bordered dark style={{height: '100%', width: '35%', justifyContent: 'center', marginLeft: 5, marginRight: 5}}>
+            <Button bordered dark
+              style={{height: '100%', width: '35%', justifyContent: 'center', marginLeft: 5, marginRight: 5}}
+              onPress={() => this.createForwardEmail()}>
               <Icon name="mail-forward" type='FontAwesome' style={{color: 'black', fontSize: 27}}/>
             </Button>
-          </Footer>
+          </Footer> */}
         </Container>
       </StyleProvider>
     )

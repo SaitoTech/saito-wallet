@@ -8,7 +8,7 @@ import variables from '../../../native-base-theme/variables/variables'
 
 import { observer, inject } from 'mobx-react'
 
-@inject('saito', 'saitoStore')
+@inject('saito', 'saitoStore', 'emailStore')
 @observer
 export default class EmailComposeScreen extends Component {
 
@@ -44,6 +44,15 @@ export default class EmailComposeScreen extends Component {
     }
   }
 
+  componentWillMount() {
+    const { navigation } = this.props
+    let to    = navigation.getParam('to', '')
+    let title = navigation.getParam('title', '')
+    console.log('TO', to)
+    console.log('TITLE', title)
+    this.setState({to, title})
+  }
+
   returnUnidentifiedKeys(message) {
     let local_id = this.saito.keys.findByPublicKey(message.author)
     local_id = local_id ? local_id : { identifiers: [] }
@@ -52,17 +61,18 @@ export default class EmailComposeScreen extends Component {
     }
   }
 
-  sendEmail() {
-    let tx = this.createEmailTX()
+  async sendEmail() {
+    let tx = await this.createEmailTX()
 
     if (tx != null) {
       debugger
       console.log(tx)
-      newtx = this.props.saito.wallet.signTransaction(tx);
+      var newtx = this.props.saito.wallet.signTransaction(tx);
 
       this.props.saito.network.propagateTransactionWithCallback(newtx, (err) => {
         if (!err) {
           Alert.alert("Success", "Your Email has been sent successfully")
+          this.saveSentEmail(newtx)
           this.props.navigation.navigate('Email')
         } else {
           Alert.alert("Error", "There was an error submitting your request to the network. This is an issue with your network connection or wallet")
@@ -71,12 +81,22 @@ export default class EmailComposeScreen extends Component {
     }
   }
 
-  createEmailTX() {
-    let to = this.state.to
+  async createEmailTX() {
+    var to = this.state.to
 
     // check if it's a publickey, get from DNS
     if (!this.props.saito.crypto.isPublicKey(to)) {
+
       // alert('Do not have support for DNS yet')
+      try {
+        var publickey = await this.props.emailStore._getPublicKey(to)
+        console.log("RETRUNED PUBKEY", publickey)
+        to = publickey
+      } catch(err) {
+        console.log(err)
+        Alert.alert("Error", "To address not found for identifier")
+        return null
+      }
     }
 
     let newtx = this.props.saito.wallet.createUnsignedTransactionWithDefaultFee(to)
@@ -92,6 +112,11 @@ export default class EmailComposeScreen extends Component {
     return newtx
   }
 
+  saveSentEmail(tx) {
+    this.props.emailStore.addEmail(tx)
+    this.props.emailStore.saveEmails()
+  }
+
   render() {
     return (
       <StyleProvider style={getTheme(variables)}>
@@ -100,20 +125,25 @@ export default class EmailComposeScreen extends Component {
             <Form>
               <Item inlineLabel style={{ marginLeft: 0 }}>
               <Label style={{width: 60, marginLeft: 5}}>To</Label>
-                <Input onChangeText={(to) => {
-                  console.log(to)
-                  this.setState({to})
-                }}/>
+                <Input
+                  value={this.state.to}
+                  onChangeText={(to) => {
+                    console.log(to)
+                    this.setState({to})
+                  }}/>
               </Item>
               <Item inlineLabel style={{ marginLeft: 0 }}>
                 <Label style={{width: 60, marginLeft: 5}}>From</Label>
                 <Input value={this.props.saito.wallet.returnPublicKey()}/>
               </Item>
               <Item style={{ marginLeft: 0 }}>
-                <Input placeholder="Title" onChangeText={(title) => {
-                  console.log(title)
-                  this.setState({title})
-                }}/>
+                <Input
+                  value={this.state.title}
+                  placeholder="Title"
+                  onChangeText={(title) => {
+                    console.log(title)
+                    this.setState({title})
+                  }}/>
               </Item>
               <Textarea
                 rowSpan={15}

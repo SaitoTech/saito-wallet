@@ -12,7 +12,7 @@ import {
 import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
 
-import { Container, Body, Content, Header, List, ListItem, Left, Right, Icon, Input, Item, Title, Thumbnail, Button, Spinner, Text, StyleProvider } from "native-base";
+import { Container, Body, Content, Fab, Header, List, ListItem, Left, Right, Icon, Input, Item, Title, Thumbnail, Button, Spinner, Text, StyleProvider } from "native-base";
 
 import { observer, inject } from 'mobx-react'
 
@@ -67,7 +67,7 @@ export default class ChatScreen extends Component {
                 <Input placeholder="Search" onChangeText={(e) => params.chatStore.updateSearchString(e)}/>
               </Item>
             <Icon name="camera" type={'MaterialCommunityIcons'} style={{color: 'white', marginLeft: 7, alignSelf: 'center'}} onPress={() => params.onPressScanner()}  />
-            <Icon name="ios-add" style={{color: 'white', fontSize: 34, alignSelf: 'center', marginLeft: 17, marginRight: 3}} onPress={() => params.setModalVisible(true)} />
+            {/* <Icon name="ios-add" style={{color: 'white', fontSize: 34, alignSelf: 'center', marginLeft: 17, marginRight: 3}} onPress={() => params.setModalVisible(true)} /> */}
           </Header>
         </StyleProvider>
       )
@@ -255,6 +255,25 @@ export default class ChatScreen extends Component {
               }
             } />}
         </Content>
+          <View style={{ flex: 1}}>
+            <Fab
+              containerStyle={{ }}
+              style={{ backgroundColor: '#161617' }}
+              position="bottomRight"
+              onPress={() => this.props.navigation.navigate('EmailCompose')}>
+              {/* <Icon name="pen" type={"FontAwesome5"} style={{color: 'white'}} /> */}
+              <Icon
+                name="ios-add"
+                style={{
+                  color: 'white',
+                  fontSize: 34,
+                  // alignSelf: 'center',
+                  // marginLeft: 17,
+                  // marginRight: 3
+                }}
+                onPress={() => this.setModalVisible(true)} />
+            </Fab>
+          </View>
       </Container>
     )
   }

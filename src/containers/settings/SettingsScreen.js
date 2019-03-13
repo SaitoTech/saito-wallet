@@ -13,7 +13,7 @@ import { observer, inject } from 'mobx-react'
 // File System
 const RNFS = require('react-native-fs')
 
-@inject('saito', 'saitoStore', 'chatStore')
+@inject('saito', 'saitoStore', 'chatStore', 'emailStore')
 @observer
 export default class SettingsScreen extends Component {
 
@@ -33,6 +33,7 @@ export default class SettingsScreen extends Component {
     await this.props.saito.storage.saveOptions()
 
     await this.props.chatStore.reset()
+    await this.props.emailStore.reset()
     await this.props.saito.reset(Object.assign(this.props.saito.options, config))
     await this.props.saitoStore.reset()
 

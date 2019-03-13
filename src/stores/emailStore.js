@@ -3,13 +3,26 @@ import { observable, computed, action } from 'mobx'
 
 export default class EmailStore {
   @observable emails = []
+  @observable display_inbox = true
 
   constructor(saito) {
     this.saito = saito
   }
 
+  @action
   async loadEmails() {
-    await AsyncStorage.getItem('emails')
+    let emails = await AsyncStorage.getItem("emails")
+
+    if (emails) {
+      emails = JSON.parse(emails)
+
+      let fetch_keys = emails.map(email => this.returnUnidentifiedKeys(email.from));
+      if (fetch_keys != []) {
+        await this._getMultipleIdentifiers(fetch_keys)
+      }
+
+      this.emails = emails
+    }
 
     // var tmptx = new saito_lib.transaction();
     // tmptx.transaction.id          = 0;
@@ -33,7 +46,8 @@ export default class EmailStore {
   }
 
   saveEmails() {
-    AsyncStorage.setItem('emails', JSON.parse(JSON.stringify(this.emails)))
+    const savedEmails = JSON.parse(JSON.stringify(this.emails))
+    AsyncStorage.setItem("emails", JSON.stringify(savedEmails))
   }
 
   @action
@@ -52,14 +66,98 @@ export default class EmailStore {
     new_email.markdown = txmsg.markdown;
     new_email.attachments = txmsg.attachments;
 
+    if (this.emails.some(email => email.id === new_email.id)) {
+      return
+    }
+
     this.emails = [new_email, ...this.emails]
+    this.saveEmails(JSON.parse(JSON.stringify(this.emails)))
   }
 
-  @computed get returnReceivedEmails() {
-    return this.emails.filter(email => email.from != this.saito.wallet.returnPublicKey())
+  @action
+  deleteEmail(email_id) {
+    console.log(email_id)
+    this.emails = this.emails.filter(email => email.id != email_id)
+    this.saveEmails()
   }
 
-  @computed get returnSentEmails() {
-    return this.emails.filter(email => email.from === this.saito.wallet.returnPublicKey())
+  @action
+  setInboxType(inbox_state) {
+    this.display_inbox = inbox_state
   }
+
+  @computed get toggledEmails() {
+    let emails = this.display_inbox ?
+      this.emails.filter(email => email.from != this.saito.wallet.returnPublicKey()) :
+      this.emails.filter(email => email.from === this.saito.wallet.returnPublicKey())
+    emails = JSON.parse(JSON.stringify(emails))
+    return emails.map((email) =>  {
+      email.from = this.findUsersFromKeys(email.from)
+      return email
+    })
+  }
+
+  returnDetailedEmail(email_id) {
+    let email = this.emails.find(email => email.id === email_id)
+    email = JSON.parse(JSON.stringify(email))
+    email.from = this.findUsersFromKeys(email.from)
+    return email
+  }
+
+  findUsersFromKeys(publickey) {
+    let local_id = this.saito.keys.findByPublicKey(publickey)
+    local_id = local_id ? local_id : { identifiers: [] }
+    return local_id.identifiers.length > 0 ? local_id.identifiers[0] : publickey;
+  }
+
+  returnUnidentifiedKeys(key) {
+    let local_id = this.saito.keys.findByPublicKey(key)
+    local_id = local_id ? local_id : { identifiers: [] }
+    if (local_id.identifiers.length == 0) {
+      return key
+    }
+  }
+
+  _getMultipleIdentifiers(keys) {
+    return new Promise((resolve, reject) => {
+      this.saito.dns.fetchMultipleIdentifiers(keys, (answer) => {
+        if (this.saito.dns.isRecordValid(answer)) {
+          var response = JSON.parse(answer).payload
+          response.forEach(key => {
+            this.saito.keys.addKey(key.publickey, key.identifier);
+          })
+        }
+        resolve (true);
+      });
+    });
+  }
+
+  _getIdentifier(author) {
+    return new Promise((resolve, reject) => {
+      this.saito.dns.fetchIdentifier(author, (answer) => {
+        if (this.saito.dns.isRecordValid(answer)) {
+          resolve(JSON.parse(answer).identifier)
+        } else {
+          reject("Can't find identifier for key");
+        }
+      });
+    });
+  }
+
+  _getPublicKey(identifier) {
+    return new Promise((resolve, reject) => {
+      this.saito.dns.fetchPublicKey(identifier, (answer) => {
+        if (!this.saito.dns.isRecordValid(answer)) {
+          reject("We cannot find the public key of that address");
+        }
+        resolve(JSON.parse(answer).publickey);
+      });
+    });
+  }
+
+  reset() {
+    AsyncStorage.removeItem("emails")
+    this.email = []
+  }
+
 }

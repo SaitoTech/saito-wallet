@@ -75,7 +75,7 @@ export default class ChatStore {
     this.chat.rooms.map(async (room, idx) => {
       var fetch_keys = []
       room.name = await this.getRoomName(room);
-      fetch_keys = room.messages.map(message => this.returnUnidentifiedKeys(message));
+      fetch_keys = room.messages.map(message => this.returnUnidentifiedKeys(message.author));
       if (fetch_keys != []) {
         await this._getMultipleIdentifiers(fetch_keys)
       }
@@ -83,11 +83,11 @@ export default class ChatStore {
     })
   }
 
-  returnUnidentifiedKeys(message) {
-    let local_id = this.saito.keys.findByPublicKey(message.author)
+  returnUnidentifiedKeys(key) {
+    let local_id = this.saito.keys.findByPublicKey(key)
     local_id = local_id ? local_id : { identifiers: [] }
     if (local_id.identifiers.length == 0) {
-      return message.author
+      return key
     }
   }
 

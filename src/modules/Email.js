@@ -11,7 +11,9 @@ export default class Email extends ModTemplate {
     this.handlesEmail    = 1;
   }
 
-  initialize() {}
+  initialize() {
+    this.emailStore.loadEmails()
+  }
 
   onConfirmation(blk, tx, conf, app) {
     if (tx == null) { return; }
@@ -23,13 +25,15 @@ export default class Email extends ModTemplate {
 
     if (conf == 0) {
       if (tx.isFrom(app.wallet.returnPublicKey())) {
-        // app.archives.saveTransaction(tx);
+        console.log("ADDING MESSAGE TO INBOX");
+        this.emailStore.addEmail(tx);
         if (tx.transaction.to[0].add != app.wallet.returnPublicKey()) { return; } else {
           app.modules.returnModule("Email")._addMessageToInbox(tx);
         }
       } else {
         if (app.BROWSER == 1) {
           if (tx.transaction.to[0].add == app.wallet.returnPublicKey()) {
+            console.log("onConfirmation EMAIL");
             app.modules.returnModule("Email")._addMessageToInbox(tx);
             // app.archives.saveTransaction(tx);
           }
@@ -39,6 +43,7 @@ export default class Email extends ModTemplate {
   }
 
   _addMessageToInbox(tx) {
+    console.log("ADDING MESSAGE TO INBOX");
     this.emailStore.addEmail(tx);
   }
 }

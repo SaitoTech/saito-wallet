@@ -1,12 +1,16 @@
 import React, {Component} from 'react'
-import {Alert, TouchableOpacity} from 'react-native'
+import {Alert, View, TouchableOpacity} from 'react-native'
 
 import { Container, Body, Button, Content, Form, Footer, Header, Label, ListItem, Left, Right, Icon, Item, Title, Separator, Text, StyleProvider, Input, Textarea } from "native-base";
 
 import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
 
+import { DocumentPicker, DocumentPickerUtil } from 'react-native-document-picker';
+
 import { observer, inject } from 'mobx-react'
+
+var RNFS = require('react-native-fs');
 
 @inject('saito', 'saitoStore', 'emailStore')
 @observer
@@ -15,10 +19,12 @@ export default class EmailComposeScreen extends Component {
   state = {
     to: '',
     title: '',
-    content: ''
+    content: '',
+    attachments: []
   }
 
   static navigationOptions = ({navigation}) => {
+    const { params = {} } = navigation.state
     return {
       header: (
         <StyleProvider style={getTheme(variables)} >
@@ -34,9 +40,10 @@ export default class EmailComposeScreen extends Component {
               </Title>
             </Body>
             <Right style={{flex: 1}}>
-              <TouchableOpacity>
+              {/* <TouchableOpacity
+                onPress={() => params.uploadFile()}>
                 <Icon name="paperclip" style={{color: 'white'}} type={"Feather"} />
-              </TouchableOpacity>
+              </TouchableOpacity> */}
             </Right>
           </Header>
         </StyleProvider>
@@ -48,9 +55,9 @@ export default class EmailComposeScreen extends Component {
     const { navigation } = this.props
     let to    = navigation.getParam('to', '')
     let title = navigation.getParam('title', '')
-    console.log('TO', to)
-    console.log('TITLE', title)
     this.setState({to, title})
+
+    this.props.navigation.setParams({ uploadFile: this.uploadFile });
   }
 
   returnUnidentifiedKeys(message) {
@@ -59,6 +66,42 @@ export default class EmailComposeScreen extends Component {
     if (local_id.identifiers.length == 0) {
       return message.author
     }
+  }
+
+  uploadFile = () => {
+    // iPhone/Android
+    DocumentPicker.show({
+      filetype: [DocumentPickerUtil.images()],
+    }, async (error, res) => {
+      // Android
+      let {
+        uri,
+        type,
+        fileName,
+        fileSize
+      } = res
+
+      const split = type.split('/');
+
+      let encoding_type = split[0] === 'image' ? 'base64' : 'utf8'
+
+      try {
+        let contents = await RNFS.readFile(uri, encoding_type)
+
+        let attachments = [...this.state.attachments, {
+          uri,
+          type,
+          fileName,
+          fileSize,
+          contents
+        }]
+        this.setState({attachments})
+      } catch (err) {
+        console.log(err.message, err.code)
+      }
+
+      console.log(res);
+    });
   }
 
   async sendEmail() {
@@ -118,6 +161,25 @@ export default class EmailComposeScreen extends Component {
   }
 
   render() {
+    // var attachments = []
+
+    // if (this.state.attachments) {
+    //   this.state.attachments.forEach((attachment) => {
+
+    //     console.log('SINGLE ATTACHMENT', attachment.fileName)
+
+    //     attachments.push(
+    //       <View style={{backgroundColor: 'grey', width: 25, height: 25}}>
+    //         <Text>
+    //           {attachment.fileName}
+    //         </Text>
+    //       </View>
+    //     )
+
+    //     console.log(attachments)
+    //   })
+    // }
+    // console.log("ATTACHMENTS", attachments)
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container >
@@ -127,10 +189,7 @@ export default class EmailComposeScreen extends Component {
               <Label style={{width: 60, marginLeft: 5}}>To</Label>
                 <Input
                   value={this.state.to}
-                  onChangeText={(to) => {
-                    console.log(to)
-                    this.setState({to})
-                  }}/>
+                  onChangeText={(to) => this.setState({to})}/>
               </Item>
               <Item inlineLabel style={{ marginLeft: 0 }}>
                 <Label style={{width: 60, marginLeft: 5}}>From</Label>
@@ -140,19 +199,15 @@ export default class EmailComposeScreen extends Component {
                 <Input
                   value={this.state.title}
                   placeholder="Title"
-                  onChangeText={(title) => {
-                    console.log(title)
-                    this.setState({title})
-                  }}/>
+                  onChangeText={(title) => this.setState({title})}/>
               </Item>
-              <Textarea
-                rowSpan={15}
-                placeholder='Compose'
-                onChangeText={(content) => {
-                  console.log(content)
-                  this.setState({content})
-                }}
-                style={{ width: '100%' }} />
+              <View>
+                <Textarea
+                  rowSpan={15}
+                  placeholder='Compose'
+                  onChangeText={content => this.setState({content})}
+                  style={{ width: '100%' }} />
+              </View>
             </Form>
           </Content>
           <Footer>

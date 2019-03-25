@@ -12,6 +12,8 @@ target 'SaitoWallet' do
   target 'SaitoWallet-tvOSTests' do
     inherit! :search_paths
     # Pods for testing
+    pod 'react-native-document-picker', :path => '../node_modules/react-native-document-picker'
+
   end
 
   target 'SaitoWalletTests' do

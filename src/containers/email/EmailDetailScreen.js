@@ -21,7 +21,7 @@ export default class EmailDetailScreen extends Component {
   }
 
   static navigationOptions = ({navigation}) => {
-    const { params = {} } = navigation.state;
+    const { params = {} } = navigation.state
     return {
       header: (
         <StyleProvider style={getTheme(variables)} >
@@ -122,18 +122,6 @@ export default class EmailDetailScreen extends Component {
               </Text>
             </View>
           </Content>
-          {/* <Footer contentContainerStyle={{flex: 1, justifyContent: 'space-around', backgroundColor: 'white'}}>
-            <Button bordered dark
-              style={{height: '100%', width: '35%', justifyContent: 'center', marginLeft: 5, marginRight: 5}}
-              onPress={() => this.createReplyEmail()}>
-              <Icon name="mail-reply" type='FontAwesome' style={{color: 'black', fontSize: 27}}/>
-            </Button>
-            <Button bordered dark
-              style={{height: '100%', width: '35%', justifyContent: 'center', marginLeft: 5, marginRight: 5}}
-              onPress={() => this.createForwardEmail()}>
-              <Icon name="mail-forward" type='FontAwesome' style={{color: 'black', fontSize: 27}}/>
-            </Button>
-          </Footer> */}
         </Container>
       </StyleProvider>
     )

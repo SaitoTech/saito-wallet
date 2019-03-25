@@ -50,9 +50,14 @@ import EmailScreen from './src/containers/email/EmailScreen.js'
 import EmailDetailScreen from './src/containers/email/EmailDetailScreen.js'
 import EmailComposeScreen from './src/containers/email/EmailComposeScreen.js'
 
+// Dreddit
+import DredditScreen from './src/containers/dreddit/DredditScreen.js'
+import DredditPostScreen from './src/containers/dreddit/DredditPostScreen.js'
+import DredditDetailScreen from './src/containers/dreddit/DredditDetailScreen.js'
 
 // Modules
 import Email from './src/modules/Email.js'
+import Dreddit from './src/modules/Dreddit.js'
 import ReactMod from './src/modules/ReactMod.js'
 import ChatCore from './src/modules/ChatCore.js'
 import Registry from './src/modules/Registry.js'
@@ -60,6 +65,7 @@ import Registry from './src/modules/Registry.js'
 import { Provider } from 'mobx-react'
 
 import ChatStore from './src/stores/chatStore'
+import DredditStore from './src/stores/dredditStore'
 import EmailStore from './src/stores/emailStore'
 import SaitoStore from './src/stores/saitoStore'
 
@@ -96,6 +102,11 @@ const AppNavigator = createStackNavigator(
     EmailCompose: EmailComposeScreen,
     EmailDetail: EmailDetailScreen,
 
+    // Dreddit
+    Dreddit: DredditScreen,
+    DredditPost: DredditPostScreen,
+    DredditDetail: DredditDetailScreen,
+
     // Scanner
     Scanner: ScanScreen
   },
@@ -113,6 +124,7 @@ export default class App extends Component {
     this.saito = new Saito(config)
 
     this.chatStore = new ChatStore(this.saito)
+    this.dredditStore = new DredditStore(this.saito)
     this.emailStore = new EmailStore(this.saito)
     this.saitoStore = new SaitoStore(this.saito)
 
@@ -128,6 +140,7 @@ export default class App extends Component {
     AppState.addEventListener('change', this._handleAppStateChange)
 
     this.saito.modules.mods.push(new Email(this.saito, this.emailStore))
+    this.saito.modules.mods.push(new Dreddit(this.saito, this.dredditStore))
     this.saito.modules.mods.push(new ChatCore(this.saito, this.chatStore))
     this.saito.modules.mods.push(new Registry(this.saito, this.saitoStore))
     this.saito.modules.mods.push(new ReactMod(this, this.saito, this.saitoStore))
@@ -148,13 +161,13 @@ export default class App extends Component {
     let fcmToken = await AsyncStorage.getItem('fcmToken')
     console.log("TOKEN: ", fcmToken)
     if (!fcmToken) {
-        fcmToken = await firebase.messaging().getToken()
-        if (fcmToken) {
-            // user has a device token
-            this._linkTokenToPublickey(fcmToken)
-            console.log("TOKEN: ", fcmToken)
-            await AsyncStorage.setItem('fcmToken', fcmToken)
-        }
+      fcmToken = await firebase.messaging().getToken()
+      if (fcmToken) {
+        // user has a device token
+        this._linkTokenToPublickey(fcmToken)
+        console.log("TOKEN: ", fcmToken)
+        await AsyncStorage.setItem('fcmToken', fcmToken)
+      }
     }
   }
 
@@ -249,7 +262,13 @@ export default class App extends Component {
 
   render() {
     return (
-      <Provider saito={this.saito} saitoStore={this.saitoStore} emailStore={this.emailStore} chatStore={this.chatStore}>
+      <Provider
+        saito={this.saito}
+        chatStore={this.chatStore}
+        saitoStore={this.saitoStore}
+        emailStore={this.emailStore}
+        dredditStore={this.dredditStore}
+        >
         <AppContainer ref={nav => {
           this.navigator = nav;
         }}/>

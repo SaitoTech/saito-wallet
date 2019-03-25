@@ -8,70 +8,45 @@ import variables from '../../../native-base-theme/variables/variables'
 
 import { observer, inject } from 'mobx-react'
 
-var BUTTONS = [
-  { text: "Inbox", icon: "american-football", iconColor: "#2c8ef4" },
-  { text: "Sent", icon: "analytics", iconColor: "#f42ced" },
-  { text: "Cancel", icon: "close", iconColor: "#25de5b" }
-];
-
-var CANCEL_INDEX = 2;
-
 @inject('emailStore')
 @observer
 export default class EmailScreen extends Component {
+  state = {
+    seg: 1
+  }
+
   static navigationOptions = ({navigation}) => {
     const { params = {} } = navigation.state;
+    console.log(params)
     return {
       header: (
         <StyleProvider style={getTheme(variables)} >
-          <Header hasSegment>
-            <Left>
+          <Header hasSegment >
+            <Left style={{flex: 1}}>
               <Button transparent onPress={() => navigation.goBack()}>
                 <Icon name="arrow-back" />
               </Button>
             </Left>
-            {/* <Body style={{ flex: 1, alignItems: 'center' }}> */}
-            {/* <Title>
+            <Body style={{ flex: 1, alignItems: 'center' }}>
+              <Title>
                 Email
-              </Title> */}
-            <Body>
-              <Segment>
-                <Button first
-                  onPress={() => params.emailStore.setInboxType(true)}>
-                  <Text>Inbox</Text>
-                </Button>
-                <Button last active
-                  onPress={() => params.emailStore.setInboxType(false)}>
-                  <Text>Sent</Text>
-                </Button>
-              </Segment>
+              </Title>
             </Body>
-            {/* <Right style={{flex: 1}}>
-              <Title style={{marginRight: 10}} onPress={() => params.emailStore.setInboxType(true)}>Inbox</Title>
-              <Title onPress={() => params.emailStore.setInboxType(false)}>Sent</Title>
-            </Right> */}
-            <Right></Right>
+            <Right style={{flex: 1}}>
+            </Right>
           </Header>
         </StyleProvider>
       )
     }
   }
 
-  componentDidMount() {
-    this.props.navigation.setParams({ emailStore: this.props.emailStore});
+  componentWillMount() {
+    this.props.navigation.setParams({ emailStore: this.props.emailStore });
   }
 
 
   onPress(id) {
-    // let index = this.props.emailStore.returnEmailIDX(email_idx)
-    // this.props.emailStore.setCurrentRoomIDX(email_idx)
-    // this.props.emailStore.clearRoomUnreadMessages(email_idx)
-
     const { navigation } = this.props
-
-    // navigation.navigate('EmailDetail', {
-    //   email: this.props.emailStore.returnCurrentEmail()
-    // });
     navigation.navigate('EmailDetail', { id });
   }
 
@@ -80,6 +55,42 @@ export default class EmailScreen extends Component {
       <StyleProvider style={getTheme(variables)}>
         <Container>
           <Content>
+          <Segment style={{width: '100%'}}>
+            <Button first
+              style={{
+                width: '45%',
+                backgroundColor: this.state.seg === 1 ? '#161617' : "white",
+                borderColor: '#161617',
+                justifyContent: 'center'
+              }}
+              active={this.state.seg === 1 ? true : false}
+              onPress={() => {
+                this.setState({ seg: 1 })
+                this.props.emailStore.setInboxType(true)
+              }}
+              >
+              <Text
+                style={{ color: this.state.seg === 1 ? "white" : "#161617" }}
+              >Inbox</Text>
+            </Button>
+            <Button last
+              style={{
+                width: '45%',
+                backgroundColor: this.state.seg === 2 ? "#161617" : "white",
+                borderColor: '#161617',
+                justifyContent: 'center'
+              }}
+              active={this.state.seg === 2 ? true : false}
+              onPress={() => {
+                this.setState({ seg: 2 })
+                this.props.emailStore.setInboxType(false)
+              }}
+              >
+              <Text
+                style={{ color: this.state.seg === 2 ? "white" : "#161617" }}
+                >Sent</Text>
+            </Button>
+          </Segment>
             <FlatList
                 data={this.props.emailStore.toggledEmails}
                 renderItem={({item, index}) => {
@@ -107,11 +118,7 @@ export default class EmailScreen extends Component {
                   // room_name = room_name.slice(0,30)
 
                   return (
-                    <ListItem key={index} onPress={this.onPress.bind(this, id)} avatar style={{ height: 80}}>
-                      {/* <Left>
-                        <Thumbnail source={require('../../../assets/img/saito_logo_black.png')}/>
-                      </Left> */}
-
+                    <ListItem key={index} onPress={this.onPress.bind(this, id)} avatar style={{ height: 80, marginLeft: 0 }}>
                       <Body style={{height: 80}}>
                         <Text >{from}</Text>
                         <Text note>{title}</Text>

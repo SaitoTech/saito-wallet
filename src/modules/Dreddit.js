@@ -74,11 +74,13 @@ export default class Dreddit extends ModTemplate {
             post
           );
         })
+        this.dredditStore.prefetchPostThumbnails()
         break;
 
       case "reddit comments":
         // newtx = new saito_lib.transaction(msg.data.tx);
         // this.addComments(newtx, msg)
+        console.log("COMMENT DATA", msg)
         this.dredditStore.addComments(msg.data)
         break;
 

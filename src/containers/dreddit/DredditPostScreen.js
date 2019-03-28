@@ -2,7 +2,27 @@
 import React, { Component } from 'react'
 import { FlatList, TouchableOpacity, Image, View } from 'react-native'
 
-import { Card, CardItem, Container, Body, Content, Header, Label, ListItem, Left, Right, Icon, Title, Button, Fab, Form, Footer, Input, Item, Segment, Text, Textarea, Thumbnail, StyleProvider } from "native-base";
+import {
+  Button,
+  Container,
+  Body,
+  Content,
+  Header,
+  Label,
+  Left,
+  Right,
+  Icon,
+  Title,
+  Fab,
+  Form,
+  Footer,
+  Input,
+  Item,
+  Spinner,
+  Text,
+  Textarea,
+  StyleProvider
+} from "native-base";
 
 import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
@@ -16,8 +36,9 @@ export default class DredditPostScreen extends Component {
   state = {
     title: '',
     url: '',
-    title: '',
+    subreddit: '',
     content:'',
+    sendingPost: false
   }
 
   static navigationOptions = ({navigation}) => {
@@ -43,26 +64,80 @@ export default class DredditPostScreen extends Component {
     }
   }
 
+  componentWillMount() {
+    const { navigation } = this.props
+    let title     = navigation.getParam('title', '')
+    let url       = navigation.getParam('url', '')
+    let subreddit = navigation.getParam('subreddit', '')
+    let content   = navigation.getParam('content', '')
+    this.setState({title, url, subreddit, content})
+  }
+
+  sendPost() {
+    this.setState({
+      sendingPost: true
+    })
+
+    let {title,url,content,subreddit} = this.state
+
+    let msg = {
+      module: "Reddit",
+      type: 'post',
+      title: title,
+      link: url,
+      text: content,
+      subreddit: subreddit,
+    }
+
+    var regex=/^[0-9A-Za-z]+$/
+
+    if (regex.test(msg.subreddit)) {} else {
+      if (msg.subreddit != "") {
+        alert("Only alphanumeric characters permitted in sub-reddit name")
+        return
+      } else {
+        msg.subreddit = "main"
+      }
+    }
+
+    if (msg.title == "") {
+      alert("You cannot submit an empty post")
+      return
+    }
+
+    var newtx = this.props.saito.wallet.createUnsignedTransactionWithDefaultFee(this.props.saito.wallet.returnPublicKey(), 0.0)
+    if (newtx == null) { alert("Unable to send TX"); return; }
+
+    newtx.transaction.msg = msg
+    newtx = this.props.saito.wallet.signTransaction(newtx)
+
+    this.props.saito.network.propagateTransactionWithCallback(newtx, () => {
+      this.setState({ sendingPost: false })
+      alert("Your post has been broadcast")
+      this.props.dredditStore.addPostLocal(newtx, msg)
+      this.props.navigation.navigate('Dreddit', {})
+    });
+  }
+
   render() {
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container >
           <Content >
+            { this.state.sendingPost ? <Spinner color='rgba(28,28,35,1)' /> :
             <Form>
               <Item inlineLabel style={{ marginLeft: 0 }}>
               <Label style={{width: 60, marginLeft: 5}}>Title</Label>
-                <Input
-                  onChangeText={(to) => this.setState({to})}/>
+                <Input onChangeText={(title) => this.setState({title})}/>
               </Item>
               <Item inlineLabel style={{ marginLeft: 0 }}>
                 <Label style={{width: 60, marginLeft: 5}}>URL</Label>
-                <Input />
+                <Input onChangeText={(url) => this.setState({url})}/>
               </Item>
               <Item style={{ marginLeft: 0 }}>
                 <Input
-                  value={this.state.title}
                   placeholder="subreddit"
-                  onChangeText={(title) => this.setState({title})}/>
+                  onChangeText={(subreddit) => this.setState({subreddit})}/>
               </Item>
               <View>
                 <Textarea
@@ -71,13 +146,15 @@ export default class DredditPostScreen extends Component {
                   onChangeText={content => this.setState({content})}
                   style={{ width: '100%' }} />
               </View>
-            </Form>
+            </Form> }
           </Content>
-          <Footer>
-            <Button block dark style={{width: '100%', height: '100%'}} onPress={() => this.sendEmail()}>
-              <Text>POST</Text>
-            </Button>
-          </Footer>
+          { this.state.sendingPost ? null :
+            <Footer>
+              <Button block dark style={{width: '100%', height: '100%'}} onPress={() => this.sendPost()}>
+                <Text>POST</Text>
+              </Button>
+            </Footer>
+          }
         </Container>
       </StyleProvider>
     )

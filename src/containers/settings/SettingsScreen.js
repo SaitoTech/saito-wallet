@@ -34,6 +34,7 @@ export default class SettingsScreen extends Component {
 
     await this.props.chatStore.reset()
     await this.props.emailStore.reset()
+    this.props.dredditStore.reset()
     await this.props.saito.reset(Object.assign(this.props.saito.options, config))
     await this.props.saitoStore.reset()
 

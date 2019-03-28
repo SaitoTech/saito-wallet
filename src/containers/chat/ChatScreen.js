@@ -255,7 +255,7 @@ export default class ChatScreen extends Component {
               }
             } />}
         </Content>
-          <View style={{ flex: 1}}>
+          <View >
             <Fab
               containerStyle={{ }}
               style={{ backgroundColor: '#161617' }}

@@ -84,7 +84,7 @@ export default class DredditDetailScreen extends Component {
   }
 
   onSendComment() {
-    var link = `https://apps.saito.network/r/${this.post.subreddit}/${this.post.sig}`
+    var link = `https://sandbox.saito.network/r/${this.post.subreddit}/${this.post.sig}`
     var msg = {
       module: "Reddit",
       type: "comment",
@@ -215,7 +215,7 @@ export default class DredditDetailScreen extends Component {
                     </Left>
                     <Thumbnail
                       square
-                      source={{uri: `https://apps.saito.network/r/screenshots/${id}.png`}}
+                      source={{uri: `https://sandbox.saito.network/r/screenshots/${id}.png`}}
                       defaultSource={require('../../../assets/img/saito_logo_black.png')}
                       />
                   </Left>

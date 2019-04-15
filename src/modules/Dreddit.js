@@ -68,12 +68,14 @@ export default class Dreddit extends ModTemplate {
         break;
 
       case "reddit payload":
-        msg.data.forEach(post => {
-          this.addPost(
-            new saito_lib.transaction(post.tx),
-            post
-          );
-        })
+        // msg.data.forEach(post => {
+        //   this.addPost(
+        //     new saito_lib.transaction(post.tx),
+        //     post
+        //   );
+        // })
+        // console.log(msg.data)
+        this.dredditStore.addPosts(msg.data)
         this.dredditStore.prefetchPostThumbnails()
         break;
 

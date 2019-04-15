@@ -10,7 +10,7 @@ export default class ChatStore {
   currentRoomIDX = null
 
   server = {
-    host: "apps.saito.network",
+    host: "sandbox.saito.network",
     port: 443,
     protocol: "https"
   }

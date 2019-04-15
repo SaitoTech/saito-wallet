@@ -52,42 +52,46 @@ export default class DredditScreen extends Component {
     let { id, title, author, subreddit, comments, text, link, sig } = item
     return (
       <Observer>{() =>
-        <Card key={id} style={{paddingTop: 15, paddingLeft: 3, paddingRight: 15, marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0}}>
-          <CardItem>
-            <Left>
-              <View style={{width: 40, marginLeft: 0, marginRight: 15, flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
-                <Button onPress={this.onVote.bind(this, index, sig, 1)} transparent style={{height: 30, alignSelf:'center'}}>
-                  <Icon type={"Entypo"} name="arrow-up" />
-                </Button>
-                <Text style={{marginLeft:0, alignSelf: 'center'}}>{item.votes}</Text>
-                <Button onPress={this.onVote.bind(this, index, sig, -1)} transparent style={{height: 30, alignSelf:'center'}}>
-                  <Icon type={"Entypo"} name="arrow-down" />
-                </Button>
-              </View>
+        <Card
+          key={id}
+          style={{paddingTop: 15, paddingLeft: 3, paddingRight: 15, marginTop: 0, marginBottom: 0, marginLeft: 0, marginRight: 0}}>
+          <TouchableOpacity onPress={this.onPress.bind(this, id, sig, index)}>
+            <CardItem>
               <Left>
-                <Text onPress={this.onPress.bind(this, id, sig, index)}>{title}</Text>
-                <Text note>{author}</Text>
+                <View style={{width: 40, marginLeft: 0, marginRight: 15, flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
+                  <Button onPress={this.onVote.bind(this, index, sig, 1)} transparent style={{height: 30, alignSelf:'center'}}>
+                    <Icon type={"Entypo"} name="arrow-up" />
+                  </Button>
+                  <Text style={{marginLeft:0, alignSelf: 'center'}}>{item.votes}</Text>
+                  <Button onPress={this.onVote.bind(this, index, sig, -1)} transparent style={{height: 30, alignSelf:'center'}}>
+                    <Icon type={"Entypo"} name="arrow-down" />
+                  </Button>
+                </View>
+                <Left>
+                  <Text>{title}</Text>
+                  <Text note>{author}</Text>
+                </Left>
+                <Thumbnail
+                  square
+                  source={{uri: `https://sandbox.saito.network/r/screenshots/${id}.png`}}
+                  defaultSource={require('../../../assets/img/saito_logo_black.png')}
+                  />
               </Left>
-              <Thumbnail
-                square
-                source={{uri: `https://apps.saito.network/r/screenshots/${id}.png`}}
-                defaultSource={require('../../../assets/img/saito_logo_black.png')}
-                />
-            </Left>
-          </CardItem>
-          <CardItem style={{height: 35}}>
-            <Left>
-              <Body>
-                <Button transparent style={{padding: 0, width: 50, heigth: 30, marginLeft: 45}}>
-                  <Icon active name="chatbubbles" style={{fontSize: 18, marginLeft: 0, marginRight: 5}}/>
-                  <Text style={{fontSize: 16, marginLeft: 0, paddingLeft:0}}>{comments}</Text>
-                </Button>
-              </Body>
-              <Text style={{fontSize: 12}}>/r/{subreddit}</Text>
-            </Left>
-          </CardItem>
-        </Card>}
-      </Observer>
+            </CardItem>
+            <CardItem style={{height: 35}}>
+              <Left>
+                <Body>
+                  <Button transparent style={{padding: 0, width: 50, heigth: 30, marginLeft: 45}}>
+                    <Icon active name="chatbubbles" style={{fontSize: 18, marginLeft: 0, marginRight: 5}}/>
+                    <Text style={{fontSize: 16, marginLeft: 0, paddingLeft:0}}>{comments}</Text>
+                  </Button>
+                </Body>
+                <Text style={{fontSize: 12}}>/r/{subreddit}</Text>
+              </Left>
+            </CardItem>
+          </TouchableOpacity>
+        </Card>
+      }</Observer>
     )
   }
 

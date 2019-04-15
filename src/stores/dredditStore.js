@@ -14,6 +14,16 @@ export default class DredditStore {
   }
 
   @action
+  addPosts(message) {
+    let posts = message.map(post =>  {
+      post.post_author = post.tx.from[0].add
+      post.author = this.findUsersFromKeys(post.tx.from[0].add)
+      return post
+    })
+    this.posts = posts
+  }
+
+  @action
   addPost(tx, message) {
     if (this.posts.some(post => post.id === message.id)){
       return
@@ -196,7 +206,7 @@ export default class DredditStore {
     // console.log("FETCHING")
     this.posts.forEach((p) => {
       console.log(p.id)
-      preFetchTasks.push(Image.prefetch(`https://apps.saito.network/r/screenshots/${p.id}`));
+      preFetchTasks.push(Image.prefetch(`https://sandbox.saito.network/r/screenshots/${p.id}`));
     });
 
     console.log("PREFETCHED", preFetchTasks)

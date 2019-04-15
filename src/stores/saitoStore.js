@@ -11,7 +11,7 @@ export default class SaitoStore {
   @observable default_fee = 0.0
 
   server = {
-    host: "apps.saito.network",
+    host: "sandbox.saito.network",
     port: 443,
     protocol: "https"
   }

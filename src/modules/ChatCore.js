@@ -22,7 +22,7 @@ class ChatCore extends ModTemplate {
     this.public_room_id = '984cb2da-13c1-11e9-ab14-d663bd873d93';
 
     this.server = {
-      host: "apps.saito.network",
+      host: "sandbox.saito.network",
       port: 443,
       protocol: "https"
     }

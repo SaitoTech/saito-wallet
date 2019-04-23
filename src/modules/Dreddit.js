@@ -30,6 +30,7 @@ export default class Dreddit extends ModTemplate {
       message.data.comment_id = comment_id;
       message.data.offset     = offset;
       this.saito.network.sendRequest(message.request, message.data);
+      this.dredditStore.setLoadingPosts(true);
     }
   }
 

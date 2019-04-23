@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { FlatList, TouchableOpacity, Image, View } from 'react-native'
 
-import { Card, CardItem, Container, Body, Content, Header, ListItem, Left, Right, Icon, Title, Button, Fab, Segment, Text, Thumbnail, StyleProvider } from "native-base";
+import { Card, CardItem, Container, Body, Content, Header, ListItem, Left, Right, Icon, Title, Button, Fab, Segment, Spinner, Text, Thumbnail, StyleProvider } from "native-base";
 
 import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
@@ -37,9 +37,12 @@ export default class DredditScreen extends Component {
   }
 
   onPress(id, sig, index) {
+    console.log("ID: ", id)
+    console.log("SIG: ", sig)
+    console.log("INDEX: ", index)
     const { navigation, dredditStore } = this.props
     dredditStore.setPostSig(sig)
-    navigation.navigate('DredditDetail', { id, index });
+    navigation.navigate('DredditDetail', { id, index })
     dredditStore.getPostComments(sig)
   }
 
@@ -49,7 +52,10 @@ export default class DredditScreen extends Component {
   }
 
   _renderItem({item, index}) {
-    let { id, title, author, subreddit, comments, text, link, sig } = item
+    let { id, tx, title, author, subreddit, comments, text, link } = item
+    let sig = tx.sig
+    console.log(tx)
+    console.log(sig)
     return (
       <Observer>{() =>
         <Card
@@ -100,9 +106,11 @@ export default class DredditScreen extends Component {
       <StyleProvider style={getTheme(variables)}>
         <Container>
           <Content>
+          { this.props.dredditStore.loadingPosts ? <Spinner color='rgba(28,28,35,1)' /> :
             <FlatList
               data={this.props.dredditStore.getPostsBySubreddit}
               renderItem={this._renderItem.bind(this)} />
+          }
           </Content>
           <View>
             <Fab

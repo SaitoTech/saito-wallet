@@ -134,6 +134,7 @@ export default class ChatScreenDetail extends Component {
         messages={chatStore.returnGiftedChatFormat}
         onSend={messages => this.onSend(messages)}
         renderBubble={this.renderBubble}
+        minComposerHeight={45}
         user={{
           _id: 1,
         }}

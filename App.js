@@ -53,6 +53,7 @@ import EmailComposeScreen from './src/containers/email/EmailComposeScreen.js'
 // Dreddit
 import DredditScreen from './src/containers/dreddit/DredditScreen.js'
 import DredditPostScreen from './src/containers/dreddit/DredditPostScreen.js'
+import DredditEditScreen from './src/containers/dreddit/DredditEditScreen.js'
 import DredditDetailScreen from './src/containers/dreddit/DredditDetailScreen.js'
 
 // Modules
@@ -105,6 +106,7 @@ const AppNavigator = createStackNavigator(
     // Dreddit
     Dreddit: DredditScreen,
     DredditPost: DredditPostScreen,
+    DredditEdit: DredditEditScreen,
     DredditDetail: DredditDetailScreen,
 
     // Scanner

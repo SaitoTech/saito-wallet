@@ -1,4 +1,4 @@
-import {AsyncStorage} from 'react-native'
+import { AsyncStorage } from 'react-native'
 import { observable, computed, action } from 'mobx'
 
 export default class EmailStore {
@@ -76,7 +76,6 @@ export default class EmailStore {
 
   @action
   deleteEmail(email_id) {
-    console.log(email_id)
     this.emails = this.emails.filter(email => email.id != email_id)
     this.saveEmails()
   }

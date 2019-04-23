@@ -11,6 +11,7 @@ import variables from '../../../native-base-theme/variables/variables'
 import { observer, inject } from 'mobx-react'
 import { Observer } from 'mobx-react/native'
 
+
 @inject('saito', 'saitoStore', 'dredditStore')
 @observer
 export default class DredditDetailScreen extends Component {
@@ -18,7 +19,9 @@ export default class DredditDetailScreen extends Component {
   state = {
     message: '',
     parent_id: '0',
+    comment_id: '',
     show_reply: false,
+    comment_action: '',
     comment_map: []
   }
 
@@ -62,11 +65,12 @@ export default class DredditDetailScreen extends Component {
   }
 
   editPost() {
-    this.props.navigation.navigate("DredditPostScreen", {
+    this.props.navigation.navigate("DredditEdit", {
       title: this.post.title,
       url: this.post.link,
       subreddit: this.post.subreddit,
       content: this.post.text,
+      sig: this.post.tx.sig,
     })
   }
 
@@ -79,17 +83,41 @@ export default class DredditDetailScreen extends Component {
     this.setState({
       parent_id: sig,
       show_reply: !this.state.show_reply,
+      comment_action: 'REPLY',
       comment_map: map
     })
   }
 
+  onEditSelect(text, sig, map) {
+    this.setState({
+      message: text,
+      comment_id: sig,
+      show_reply: !this.state.show_reply,
+      comment_action: 'EDIT',
+      comment_map: map,
+    })
+  }
+
   onSendComment() {
+    switch(this.state.comment_action) {
+      case 'REPLY':
+        this.postComment();
+        break;
+      case 'EDIT':
+        this.editComment();
+        break;
+      default:
+        break;
+    }
+  }
+
+  postComment() {
     var link = `https://sandbox.saito.network/r/${this.post.subreddit}/${this.post.sig}`
     var msg = {
       module: "Reddit",
       type: "comment",
       text: this.state.message,
-      post_id: this.post.sig,
+      post_id: this.post.tx.sig,
       parent_id: this.state.parent_id,
       post_author: this.post.post_author,
       link: link,
@@ -115,19 +143,19 @@ export default class DredditDetailScreen extends Component {
     var msg = {};
     msg.module     = "Reddit";
     msg.type       = "edit_comment";
-    msg.post_id    = this.post.sig;
+    msg.post_id    = this.post.tx.sig;
     msg.comment_id = this.state.comment_id;
     msg.data       = this.state.message;
 
     let newtx = this.createCommentTX(msg)
     this.sendComment(newtx)
-    //this.props.dredditStore.editComment(newtx, msg, this.state.comment_map)
+    this.props.dredditStore.editComment(newtx, msg, this.state.comment_map)
   }
 
   sendComment(newtx) {
     this.props.saito.network.propagateTransactionWithCallback(newtx, () => {
       alert("Your comment has been broadcast")
-      this.setState({parent_id: 0, show_reply: !this.state.show_reply})
+      this.setState({parent_id: 0, show_reply: !this.state.show_reply, message: ''})
     });
   }
 
@@ -163,15 +191,29 @@ export default class DredditDetailScreen extends Component {
                 <Left>
                   <Text note>{author}</Text>
                   <Markdown rules={this.rules}>{comment.data.text}</Markdown>
-                  <Button
-                    transparent
-                    onPress={
-                      this.onReplySelect.bind(this, comment.data.sig, JSON.parse(JSON.stringify([index])))
+                  <View style={{ flex: 1, flexDirection: 'row'}}>
+                    <Button
+                      transparent
+                      onPress={
+                        this.onReplySelect.bind(this, comment.data.sig, JSON.parse(JSON.stringify([index])))
+                      }
+                      style={{padding: 0, width: 75, height: 30}}>
+                      <Icon active name="chatbubbles" style={{fontSize: 16, marginLeft: 0, marginRight: 5}}/>
+                      <Text style={{fontSize: 12, marginLeft: 0, paddingLeft:0}}>reply</Text>
+                    </Button>
+                    {
+                      comment.data.publickey === this.props.saito.wallet.returnPublicKey() ?
+                      <Button
+                        transparent
+                        onPress={
+                          this.onEditSelect.bind(this, comment.data.text, comment.data.sig, JSON.parse(JSON.stringify(next_map)))
+                        }
+                        style={{padding: 0, width: 75, height: 30}}>
+                        <Icon active type={"FontAwesome5"} name={"edit"} style={{fontSize: 16, marginLeft: 0, marginRight: 0}}/>
+                        <Text style={{fontSize: 12, marginLeft: 0, marginRight: 5, paddingLeft:0}}>edit</Text>
+                      </Button> : null
                     }
-                    style={{padding: 0, width: 75, height: 30}}>
-                    <Icon active name="chatbubbles" style={{fontSize: 16, marginLeft: 0, marginRight: 5}}/>
-                    <Text style={{fontSize: 12, marginLeft: 0, paddingLeft:0}}>reply</Text>
-                  </Button>
+                  </View>
                 </Left>
               </Left>
             </CardItem>
@@ -183,7 +225,7 @@ export default class DredditDetailScreen extends Component {
   }
 
   render() {
-    let { id, title, author, subreddit, comments, text, link, sig } = this.props.dredditStore.posts[this.post_index]
+    let { id, title, author, post_author, subreddit, comments, text, link, sig } = this.props.dredditStore.posts[this.post_index]
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container>
@@ -212,6 +254,16 @@ export default class DredditDetailScreen extends Component {
                         onPress={() => Linking.openURL(link)}
                       >{title}</Text>
                       <Text note>{author}</Text>
+                      {
+                        post_author === this.props.saito.wallet.returnPublicKey() ?
+                          <Button
+                            transparent
+                            onPress={this.editPost.bind(this)}
+                            style={{padding: 0, width: 75, height: 30}}>
+                            <Icon active type={"FontAwesome5"} name={"edit"} style={{fontSize: 16, marginLeft: 0, marginRight: 0}}/>
+                            <Text style={{fontSize: 12, marginLeft: 0, marginRight: 5, paddingLeft:0}}>edit</Text>
+                          </Button> : null
+                      }
                     </Left>
                     <Thumbnail
                       square
@@ -220,15 +272,6 @@ export default class DredditDetailScreen extends Component {
                       />
                   </Left>
                 </CardItem>
-                {/* <CardItem>
-                  <Body>
-                    <Button
-                      onPress={() => this.editPost()}
-                      transparent>
-                      <Icon type={"FontAwesome5"} name={"edit"}/>
-                    </Button>
-                  </Body>
-                </CardItem> */}
                 <CardItem style={{margin: 10}}>
                   <Body>
                     <Markdown>
@@ -261,7 +304,7 @@ export default class DredditDetailScreen extends Component {
 
                 return (
                   <Observer>{() =>
-                    <Card style={{marginTop: 0, marginLeft: 0, marginRight: 0}}>
+                    <Card style={{ marginTop: 0, marginLeft: 0, marginRight: 0 }}>
                       <Card transparent>
                         <CardItem style={{justifyContent: 'flex-start', alignItems: 'flex-start'}}>
                           <Left>
@@ -286,15 +329,29 @@ export default class DredditDetailScreen extends Component {
                             <Left>
                               <Text note>{author}</Text>
                               <Markdown rules={this.rules}>{item.data.text}</Markdown>
-                              <Button
-                                transparent
-                                onPress={
-                                  this.onReplySelect.bind(this, item.data.sig, JSON.parse(JSON.stringify([index])))
+                              <View style={{ flex: 1, flexDirection: 'row'}}>
+                                <Button
+                                  transparent
+                                  onPress={
+                                    this.onReplySelect.bind(this, item.data.sig, JSON.parse(JSON.stringify([index])))
+                                  }
+                                  style={{padding: 0, width: 75, height: 30}}>
+                                  <Icon active name="chatbubbles" style={{fontSize: 16, marginLeft: 0, marginRight: 5}}/>
+                                  <Text style={{ fontSize: 12, marginLeft: 0, paddingLeft:0 }}>reply</Text>
+                                </Button>
+                                {
+                                  item.data.publickey === this.props.saito.wallet.returnPublicKey() ?
+                                  <Button
+                                    transparent
+                                    onPress={
+                                      this.onEditSelect.bind(this, item.data.text, item.data.sig, JSON.parse(JSON.stringify([index])))
+                                    }
+                                    style={{padding: 0, width: 75, height: 30}}>
+                                    <Icon active type={"FontAwesome5"} name={"edit"} style={{fontSize: 16, marginLeft: 0, marginRight: 0}}/>
+                                    <Text style={{fontSize: 12, marginLeft: 0, marginRight: 5, paddingLeft:0}}>edit</Text>
+                                  </Button> : null
                                 }
-                                style={{padding: 0, width: 75, height: 30}}>
-                                <Icon active name="chatbubbles" style={{fontSize: 16, marginLeft: 0, marginRight: 5}}/>
-                                <Text style={{fontSize: 12, marginLeft: 0, paddingLeft:0}}>reply</Text>
-                              </Button>
+                              </View>
                             </Left>
                           </Left>
                         </CardItem>
@@ -311,6 +368,7 @@ export default class DredditDetailScreen extends Component {
               <View style={{flex: 1, flexDirection: 'row'}}>
                 <Textarea
                   style={styles.input}
+                  value={this.state.message}
                   onChangeText={text => this.setState({ message: text })}
                 />
                 <Button
@@ -340,17 +398,22 @@ const styles = StyleSheet.create({
   bottomView: {
     width: '100%',
     height: 100,
-    borderWidth: 1,
+    padding: 10,
+    borderTopWidth: 1,
+    borderTopColor: '#dedcdb',
+    // borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute', //Here is the trick
     bottom: 0, //Here is the trick
+    backgroundColor: 'white',
   },
   input: {
-    backgroundColor: 'white',
+    backgroundColor: '#dedcdb',
     width: '85%',
     height: '100%',
+    borderRadius: 10,
     position: 'relative',
-    color: 'black'
+    color: 'black',
   },
 });

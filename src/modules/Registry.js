@@ -1,13 +1,15 @@
-import {ModTemplate} from 'saito-lib'
+import config from '../../saito.config'
+import { ModTemplate } from 'saito-lib'
 
-
-export default class Registry extends ModTemplate{
+export default class Registry extends ModTemplate {
   constructor(saito, saitoStore) {
     super()
     this.saito = saito
     this.store = saitoStore
 
-    this.publickey = '23ykRYbjvAzHLRaTYPcqjkQ2LnFYeMkg9cJgXPbrWcHmr'
+    this.publickey = config.dns[0].publickey
+    // apps
+    //'23ykRYbjvAzHLRaTYPcqjkQ2LnFYeMkg9cJgXPbrWcHmr'
 
     this.handlesEmail    = 1;
     this.handlesDNS      = 1;

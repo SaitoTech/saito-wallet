@@ -7,6 +7,7 @@ export default class DredditStore {
   @observable comments = {}
 
   @observable post_sig = ""
+  @observable loadingPosts = false
   @observable loadingComments = false
 
   constructor(saito) {
@@ -21,6 +22,7 @@ export default class DredditStore {
       return post
     })
     this.posts = posts
+    this.setLoadingPosts(false);
   }
 
   @action
@@ -73,6 +75,16 @@ export default class DredditStore {
   }
 
   @action
+  editPostLocal(tx, message) {
+    let new_posts = this.posts.map(post => {
+      if (post.tx.sig === message.post_id) { post.text = message.data }
+      return post
+    });
+
+    this.posts = new_posts.slice()
+  }
+
+  @action
   addComments(comments) {
     this.comments[this.post_sig] = comments
     this.setLoadingComments(false)
@@ -115,6 +127,11 @@ export default class DredditStore {
   }
 
   @action
+  editComment(tx, msg, map) {
+    this.searchForCommentAndEdit(this.comments[this.post_sig], map, msg.data)
+  }
+
+  @action
   setPostSig(post_sig) {
     this.post_sig = post_sig
   }
@@ -126,7 +143,13 @@ export default class DredditStore {
 
   @action
   updateCommentVote(vote, key, map) {
-    this.searchForComment(this.comments[this.post_sig], map, vote)
+    console.log("WHY ARE YOU FIRING?");
+    this.searchForCommentAndVote(this.comments[this.post_sig], map, vote)
+  }
+
+  @action
+  setLoadingPosts(state) {
+    this.loadingPosts = state
   }
 
   @action
@@ -139,7 +162,7 @@ export default class DredditStore {
     if (map.length === 0) {
       comments[index].data.votes = comments[index].data.votes + vote
     } else {
-      this.searchForComment(comments[index].children, map, vote)
+      this.searchForCommentAndVote(comments[index].children, map, vote)
     }
   }
 
@@ -155,8 +178,16 @@ export default class DredditStore {
     }
   }
 
+  searchForCommentAndEdit(comments, map, text) {
+    let index = map.shift()
+    if (map.length === 0) {
+      comments[index].data.text = text
+    } else {
+      this.searchForCommentAndEdit(comments[index].children, map, text)
+    }
+  }
+
   @computed get getPostsBySubreddit() {
-    console.log("COMPUTING")
     return this.posts.slice()
   }
 
@@ -178,11 +209,11 @@ export default class DredditStore {
     }
 
     this.saito.network.sendRequest(message.request, message.data)
-    console.log("VOTED")
   }
 
 
   getPostComments(post_sig) {
+    console.log("POST_SIG", post_sig);
     this.setLoadingComments(true)
     let request = "reddit load comments"
     let message = {

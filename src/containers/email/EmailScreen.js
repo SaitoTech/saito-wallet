@@ -17,7 +17,6 @@ export default class EmailScreen extends Component {
 
   static navigationOptions = ({navigation}) => {
     const { params = {} } = navigation.state;
-    console.log(params)
     return {
       header: (
         <StyleProvider style={getTheme(variables)} >

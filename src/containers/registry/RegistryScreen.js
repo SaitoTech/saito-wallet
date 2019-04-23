@@ -7,13 +7,16 @@ import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
 
 import {inject} from 'mobx-react'
+// import { config } from 'react-native-firebase';
+import config from '../../../saito.config.js'
 
 @inject('saito')
 export default class RegistryScreen extends Component {
   state = {
     requested_identifier: ''
   }
-  publickey = '23ykRYbjvAzHLRaTYPcqjkQ2LnFYeMkg9cJgXPbrWcHmr'
+  publickey = config.dns[0].publickey
+  //'23ykRYbjvAzHLRaTYPcqjkQ2LnFYeMkg9cJgXPbrWcHmr'
 
   constructor(props) {
     super(props)

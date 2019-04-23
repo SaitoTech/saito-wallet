@@ -31,14 +31,15 @@ import { observer, inject } from 'mobx-react'
 
 @inject('saito', 'saitoStore', 'dredditStore')
 @observer
-export default class DredditPostScreen extends Component {
+export default class DredditEditScreen extends Component {
 
   state = {
     title: '',
     url: '',
     subreddit: '',
     content:'',
-    sendingPost: false
+    sig: '',
+    sendingEdit: false
   }
 
   static navigationOptions = ({navigation}) => {
@@ -53,7 +54,7 @@ export default class DredditPostScreen extends Component {
             </Left>
             <Body style={{ flex: 1, alignItems: 'center' }}>
               <Title>
-                Dreddit
+                Edit Post
               </Title>
             </Body>
             <Right style={{flex: 1}}>
@@ -70,40 +71,45 @@ export default class DredditPostScreen extends Component {
     let url       = navigation.getParam('url', '')
     let subreddit = navigation.getParam('subreddit', '')
     let content   = navigation.getParam('content', '')
-    this.setState({title, url, subreddit, content})
+    let sig       = navigation.getParam('sig', '')
+    this.setState({title, url, subreddit, content, sig})
   }
 
-  sendPost() {
+  sendEdit() {
     this.setState({
-      sendingPost: true
+      sendingEdit: true
     })
 
-    let {title,url,content,subreddit} = this.state
+    let { content, sig } = this.state
 
     let msg = {
       module: "Reddit",
-      type: 'post',
-      title: title,
-      link: url,
-      text: content,
-      subreddit: subreddit,
+      type: 'edit_post',
+      post_id: sig,
+      data: content
     }
 
-    var regex=/^[0-9A-Za-z]+$/
+    // msg.module     = "Reddit";
+    // msg.type       = "edit_comment";
+    // msg.post_id    = this.post.sig;
+    // msg.comment_id = this.state.comment_id;
+    // msg.data       = this.state.message;
 
-    if (regex.test(msg.subreddit)) {} else {
-      if (msg.subreddit != "") {
-        alert("Only alphanumeric characters permitted in sub-reddit name")
-        return
-      } else {
-        msg.subreddit = "main"
-      }
-    }
+    // var regex=/^[0-9A-Za-z]+$/
 
-    if (msg.title == "") {
-      alert("You cannot submit an empty post")
-      return
-    }
+    // if (regex.test(msg.subreddit)) {} else {
+    //   if (msg.subreddit != "") {
+    //     alert("Only alphanumeric characters permitted in sub-reddit name")
+    //     return
+    //   } else {
+    //     msg.subreddit = "main"
+    //   }
+    // }
+
+    // if (msg.title == "") {
+    //   alert("You cannot submit an empty post")
+    //   return
+    // }
 
     var newtx = this.props.saito.wallet.createUnsignedTransactionWithDefaultFee(this.props.saito.wallet.returnPublicKey(), 0.0)
     if (newtx == null) { alert("Unable to send TX"); return; }
@@ -112,10 +118,10 @@ export default class DredditPostScreen extends Component {
     newtx = this.props.saito.wallet.signTransaction(newtx)
 
     this.props.saito.network.propagateTransactionWithCallback(newtx, () => {
-      this.setState({ sendingPost: false })
-      alert("Your post has been broadcast")
-      this.props.dredditStore.addPostLocal(newtx, msg)
-      this.props.navigation.navigate('Dreddit', {})
+      this.setState({ sendingEdit: false })
+      alert("Your edit has been broadcast")
+      this.props.dredditStore.editPostLocal(newtx, msg)
+      this.props.navigation.goBack();
     });
   }
 
@@ -124,12 +130,13 @@ export default class DredditPostScreen extends Component {
       <StyleProvider style={getTheme(variables)}>
         <Container >
           <Content >
-            { this.state.sendingPost ? <Spinner color='rgba(28,28,35,1)' /> :
+            { this.state.sendingEdit ? <Spinner color='rgba(28,28,35,1)' /> :
             <Form>
               <Item inlineLabel style={{ marginLeft: 0 }}>
               <Label style={{width: 60, marginLeft: 5}}>Title</Label>
                 <Input
                   onChangeText={(title) => this.setState({title})}
+                  editable={false}
                   value={this.state.title}
                   />
               </Item>
@@ -137,13 +144,15 @@ export default class DredditPostScreen extends Component {
                 <Label style={{width: 60, marginLeft: 5}}>URL</Label>
                 <Input
                   onChangeText={(url) => this.setState({url})}
+                  editable={false}
                   value={this.state.url}
                 />
               </Item>
               <Item style={{ marginLeft: 0 }}>
                 <Input
-                  placeholder="Subreddit"
+                  placeholder="subreddit"
                   onChangeText={(subreddit) => this.setState({subreddit})}
+                  editable={false}
                   value={this.state.subreddit}
                   />
               </Item>
@@ -158,10 +167,10 @@ export default class DredditPostScreen extends Component {
               </View>
             </Form> }
           </Content>
-          { this.state.sendingPost ? null :
+          { this.state.sendingEdit ? null :
             <Footer>
-              <Button block dark style={{width: '95%', height: '95%'}} onPress={() => this.sendPost()}>
-                <Text>POST</Text>
+              <Button block dark style={{width: '100%', height: '100%'}} onPress={() => this.sendEdit()}>
+                <Text>EDIT</Text>
               </Button>
             </Footer>
           }

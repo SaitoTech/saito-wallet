@@ -154,8 +154,9 @@ export default class EmailStore {
     });
   }
 
-  reset() {
-    AsyncStorage.removeItem("emails")
+  async reset() {
+    console.log("RESETTING EMAILS")
+    await AsyncStorage.removeItem("emails")
     this.email = []
   }
 

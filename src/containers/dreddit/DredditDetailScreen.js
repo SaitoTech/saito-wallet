@@ -176,8 +176,13 @@ export default class DredditDetailScreen extends Component {
         <View>
           <Card transparent style={{marginLeft: spacing, padding: 0, marginTop: 0}}>
             <CardItem>
-              <Left>
-                <View style={{width: 40, marginRight: 8, flexDirection: 'column', justifyContent:"flex-start"}}>
+              <Left
+                style={{alignItems: 'flex-start'}}>
+                <View style={{
+                  width: 40,
+                  marginRight: 8,
+                  flexDirection: 'column',
+                }}>
                   <Button onPress={this.onCommentVote.bind(this, JSON.parse(JSON.stringify(next_map)), comment.data.sig, 1)}
                     transparent style={{height: 30, alignSelf:'center'}}>
                     <Icon type={"Entypo"} name="arrow-up" />
@@ -234,7 +239,9 @@ export default class DredditDetailScreen extends Component {
               <Card style={{paddingTop: 15, paddingLeft: 3, paddingRight: 15, marginTop: 0, marginLeft: 0, marginRight: 0}}>
                 <CardItem>
                   <Left>
-                    <View style={{width: 40, marginLeft: 0, marginRight: 15, flexDirection: 'column'}}>
+                    <View style={{
+                      width: 40, marginLeft: 0, marginRight: 15, flexDirection: 'column'
+                      }}>
                       <Button
                         onPress={this.onPostVote.bind(this, this.post_index, sig, 1)}
                         transparent
@@ -251,7 +258,9 @@ export default class DredditDetailScreen extends Component {
                     </View>
                     <Left>
                       <Text
-                        onPress={() => Linking.openURL(link)}
+                        onPress={() => {
+                          if (link) { Linking.openURL(link) }
+                        }}
                       >{title}</Text>
                       <Text note>{author}</Text>
                       {
@@ -307,15 +316,13 @@ export default class DredditDetailScreen extends Component {
                     <Card style={{ marginTop: 0, marginLeft: 0, marginRight: 0 }}>
                       <Card transparent>
                         <CardItem style={{justifyContent: 'flex-start', alignItems: 'flex-start'}}>
-                          <Left>
-                            <View style={{
-                              width: 40,
-                              marginLeft: 0,
-                              marginRight: 8,
-                              flexDirection: 'column',
-                              justifyContent:"flex-start",
-                              alignItems:"flex-start"
-                            }}>
+                          <Left
+                            style={{alignItems: 'flex-start'}}>
+                          <View style={{
+                            width: 40,
+                            marginRight: 8,
+                            flexDirection: 'column',
+                          }}>
                               <Button onPress={this.onCommentVote.bind(this, JSON.parse(JSON.stringify([index])), item.data.sig, 1)}
                               transparent style={{height: 30, alignSelf:'center'}}>
                                 <Icon type={"Entypo"} name="arrow-up" />
@@ -369,6 +376,7 @@ export default class DredditDetailScreen extends Component {
                 <Textarea
                   style={styles.input}
                   value={this.state.message}
+                  placeholder={'Type comment here...'}
                   onChangeText={text => this.setState({ message: text })}
                 />
                 <Button
@@ -381,7 +389,6 @@ export default class DredditDetailScreen extends Component {
             : null}
           {this.state.show_reply ? null : <View>
             <Fab
-              // containerStyle={{ }}
               style={{ backgroundColor: '#161617' }}
               position="bottomRight"
               onPress={this.onReplySelect.bind(this, '0', [])}>
@@ -397,10 +404,11 @@ export default class DredditDetailScreen extends Component {
 const styles = StyleSheet.create({
   bottomView: {
     width: '100%',
-    height: 100,
+    // height: 50,
     padding: 10,
+    paddingRight: 0,
     borderTopWidth: 1,
-    borderTopColor: '#dedcdb',
+    borderTopColor: '#eaeaef',
     // borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
@@ -409,9 +417,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   input: {
-    backgroundColor: '#dedcdb',
+    backgroundColor: '#eaeaef',
     width: '85%',
-    height: '100%',
+    // height: '100%',
     borderRadius: 10,
     position: 'relative',
     color: 'black',

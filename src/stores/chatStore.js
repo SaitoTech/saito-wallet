@@ -8,6 +8,7 @@ export default class ChatStore {
   @observable users = {}
   @observable search_string = ''
   currentRoomIDX = null
+  chat_room_ids = []
 
   server = {
     host: "sandbox.saito.network",
@@ -158,8 +159,12 @@ export default class ChatStore {
 
   @action
   async addRoom(new_room) {
-    new_room.name = await this.getRoomName(new_room)
-    this.chat.rooms.push(new_room);
+    let unique_room = this.chat_room_ids.some(room_id => room_id === new_room.id)
+    if (!unique_room) {
+      this.chat_room_ids.push(new_room.id)
+      new_room.name = await this.getRoomName(new_room)
+      this.chat.rooms.unshift(new_room);
+    }
   }
 
   @action

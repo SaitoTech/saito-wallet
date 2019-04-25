@@ -30,7 +30,6 @@ export default class ChatScreen extends Component {
   }
 
   onSelect = data => {
-    debugger
     let addresses
     if (this.state.addresses.length > 1) {
       addresses = [...this.state.addresses, data.address]
@@ -64,7 +63,14 @@ export default class ChatScreen extends Component {
             />
               <Item style={{marginBottom: 8, marginTop: 7}}>
                 <Icon name="ios-search" />
-                <Input placeholder="Search" onChangeText={(e) => params.chatStore.updateSearchString(e)}/>
+                <Input
+                  style={{
+                    padding: 0,
+                    margin: 0,
+                    // height: '100%'
+                  }}
+                  textAlignVertical={'center'}
+                  placeholder="Search" onChangeText={(e) => params.chatStore.updateSearchString(e)}/>
               </Item>
             <Icon name="camera" type={'MaterialCommunityIcons'} style={{color: 'white', marginLeft: 7, alignSelf: 'center'}} onPress={() => params.onPressScanner()}  />
             {/* <Icon name="ios-add" style={{color: 'white', fontSize: 34, alignSelf: 'center', marginLeft: 17, marginRight: 3}} onPress={() => params.setModalVisible(true)} /> */}

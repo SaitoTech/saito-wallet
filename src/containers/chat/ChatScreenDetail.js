@@ -1,12 +1,12 @@
 import React, {Component} from 'react'
-import { TouchableOpacity, View } from 'react-native'
+import { Platform, TouchableOpacity, View } from 'react-native'
 
 import getTheme from '../../../native-base-theme/components'
 import variables from '../../../native-base-theme/variables/variables'
 
 import { Container, Body, Content, Header, Left, Right, Icon, Title, Button, Text, StyleProvider } from "native-base";
 // import Icon from 'react-native-vector-icons/FontAwesome5';
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, Composer, Send } from 'react-native-gifted-chat'
 import { observer, inject } from 'mobx-react'
 
 @inject('saito', 'chatStore')
@@ -118,13 +118,47 @@ export default class ChatScreenDetail extends Component {
       );
     }
     return (
-      <View >
+      <View>
         <Text style={{color: '#a19d9b'}}>{props.currentMessage.user.name}</Text>
         <Bubble
           {...props}
         />
       </View>
     );
+  }
+
+  renderComposer(props) {
+    return (
+      <Composer
+        {...props}
+        textInputStyle={{
+          flex: 1,
+          marginLeft: 10,
+          fontSize: 16,
+          lineHeight: 20,
+          marginTop: Platform.select({
+            ios: 6,
+            android: 0,
+          }),
+          marginBottom: Platform.select({
+            ios: 5,
+            android: 0,
+          }),
+          padding: 0,
+      }}/>
+    )
+  }
+
+  renderSend(props) {
+    return (
+      <Send
+        {...props}
+        containerStyle={{
+          height: 41,
+          justifyContent: 'flex-end',
+        }}
+      />
+    )
   }
 
   render() {
@@ -134,6 +168,8 @@ export default class ChatScreenDetail extends Component {
         messages={chatStore.returnGiftedChatFormat}
         onSend={messages => this.onSend(messages)}
         renderBubble={this.renderBubble}
+        renderComposer={this.renderComposer}
+        renderSend={this.renderSend}
         minComposerHeight={45}
         user={{
           _id: 1,

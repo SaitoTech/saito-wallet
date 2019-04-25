@@ -41,6 +41,7 @@ export default class EmailScreen extends Component {
 
   componentWillMount() {
     this.props.navigation.setParams({ emailStore: this.props.emailStore });
+    this.props.emailStore.display_inbox = true;
   }
 
 

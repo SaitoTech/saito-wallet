@@ -211,7 +211,7 @@ export default class EmailComposeScreen extends Component {
             </Form>
           </Content>
           <Footer>
-            <Button block dark style={{width: '100%', height: '100%'}} onPress={() => this.sendEmail()}>
+            <Button block dark style={{width: '95%', height: '95%'}} onPress={() => this.sendEmail()}>
               <Text>SEND</Text>
             </Button>
           </Footer>

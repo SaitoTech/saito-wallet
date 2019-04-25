@@ -41,7 +41,6 @@ export default class DredditDetailScreen extends Component {
   }
 
   static navigationOptions = ({navigation}) => {
-    //const { params = {} } = navigation.state;
     return {
       header: (
         <StyleProvider style={getTheme(variables)} >
@@ -404,12 +403,10 @@ export default class DredditDetailScreen extends Component {
 const styles = StyleSheet.create({
   bottomView: {
     width: '100%',
-    // height: 50,
     padding: 10,
     paddingRight: 0,
     borderTopWidth: 1,
     borderTopColor: '#eaeaef',
-    // borderWidth: 1,
     justifyContent: 'center',
     alignItems: 'center',
     position: 'absolute', //Here is the trick
@@ -419,7 +416,6 @@ const styles = StyleSheet.create({
   input: {
     backgroundColor: '#eaeaef',
     width: '85%',
-    // height: '100%',
     borderRadius: 10,
     position: 'relative',
     color: 'black',

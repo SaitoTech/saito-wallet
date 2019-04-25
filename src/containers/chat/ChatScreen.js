@@ -67,7 +67,6 @@ export default class ChatScreen extends Component {
                   style={{
                     padding: 0,
                     margin: 0,
-                    // height: '100%'
                   }}
                   textAlignVertical={'center'}
                   placeholder="Search" onChangeText={(e) => params.chatStore.updateSearchString(e)}/>
@@ -267,15 +266,11 @@ export default class ChatScreen extends Component {
               style={{ backgroundColor: '#161617' }}
               position="bottomRight"
               onPress={() => this.props.navigation.navigate('EmailCompose')}>
-              {/* <Icon name="pen" type={"FontAwesome5"} style={{color: 'white'}} /> */}
               <Icon
                 name="ios-add"
                 style={{
                   color: 'white',
                   fontSize: 34,
-                  // alignSelf: 'center',
-                  // marginLeft: 17,
-                  // marginRight: 3
                 }}
                 onPress={() => this.setModalVisible(true)} />
             </Fab>

@@ -5,8 +5,9 @@ export default class EmailStore {
   @observable emails = []
   @observable display_inbox = true
 
-  constructor(saito) {
+  constructor(config, saito) {
     this.saito = saito
+    this.config = config
   }
 
   @action

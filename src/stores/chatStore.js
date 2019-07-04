@@ -1,6 +1,7 @@
 import axios from 'axios'
 import {AsyncStorage} from 'react-native'
 import { observable, computed, action } from 'mobx'
+// import config from '../../../satio.config'
 
 export default class ChatStore {
   @observable isFetchingChat = false
@@ -10,15 +11,9 @@ export default class ChatStore {
   currentRoomIDX = null
   chat_room_ids = []
 
-  server = {
-    host: "sandbox.saito.network",
-    port: 443,
-    protocol: "https"
-  }
-
-
-  constructor(saito) {
+  constructor(config, saito) {
     this.saito = saito;
+    this.server = config.peers[0]
   }
 
   roomReducer = (accumulator, room) => {

@@ -10,17 +10,11 @@ export default class SaitoStore {
   @observable identifier = ''
   @observable default_fee = 0.0
 
-  server = {
-    host: "sandbox.saito.network",
-    port: 443,
-    protocol: "https"
-  }
-
-
-  constructor(saito) {
+  constructor(config, saito) {
     this.saito   = saito
     this.balance = saito.wallet.wallet.balance
     this.publickey = saito.wallet.wallet.publickey
+    this.server = config.peers[0]
   }
 
   @action

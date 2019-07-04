@@ -11,8 +11,9 @@ import variables from '../../../native-base-theme/variables/variables'
 import { observer, inject } from 'mobx-react'
 import { Observer } from 'mobx-react/native'
 
+// import config from '../../../satio.config'
 
-@inject('saito', 'saitoStore', 'dredditStore')
+@inject('config', 'saito', 'saitoStore', 'dredditStore')
 @observer
 export default class DredditDetailScreen extends Component {
 
@@ -111,7 +112,8 @@ export default class DredditDetailScreen extends Component {
   }
 
   postComment() {
-    var link = `https://sandbox.saito.network/r/${this.post.subreddit}/${this.post.sig}`
+    var {host, port, protocol} = this.props.saito.network.peers[0].peer;
+    var link = `${protocol}://${host}:${port}/r/${this.post.subreddit}/${this.post.sig}`
     var msg = {
       module: "Reddit",
       type: "comment",
@@ -230,6 +232,7 @@ export default class DredditDetailScreen extends Component {
 
   render() {
     let { id, title, author, post_author, subreddit, comments, text, link, sig } = this.props.dredditStore.posts[this.post_index]
+    let { protocol, host, port } = this.props.config.peers[0]
     return (
       <StyleProvider style={getTheme(variables)}>
         <Container>
@@ -275,7 +278,9 @@ export default class DredditDetailScreen extends Component {
                     </Left>
                     <Thumbnail
                       square
-                      source={{uri: `https://sandbox.saito.network/r/screenshots/${id}.png`}}
+                      // let { protocol, host, port } = config.peers[0]
+                      // source={{uri: `https://sandbox.saito.network/r/screenshots/${id}.png`}}
+                      source={{uri: `${protocol}://${host}:${port}/r/screenshots/${id}.png`}}
                       defaultSource={require('../../../assets/img/saito_logo_black.png')}
                       />
                   </Left>

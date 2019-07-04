@@ -125,10 +125,10 @@ export default class App extends Component {
 
     this.saito = new Saito(config)
 
-    this.chatStore = new ChatStore(this.saito)
-    this.dredditStore = new DredditStore(this.saito)
-    this.emailStore = new EmailStore(this.saito)
-    this.saitoStore = new SaitoStore(this.saito)
+    this.chatStore = new ChatStore(config, this.saito)
+    this.dredditStore = new DredditStore(config, this.saito)
+    this.emailStore = new EmailStore(config, this.saito)
+    this.saitoStore = new SaitoStore(config, this.saito)
 
     this.state = {
       appState: AppState.currentState,
@@ -143,7 +143,7 @@ export default class App extends Component {
 
     this.saito.modules.mods.push(new Email(this.saito, this.emailStore))
     this.saito.modules.mods.push(new Dreddit(this.saito, this.dredditStore))
-    this.saito.modules.mods.push(new ChatCore(this.saito, this.chatStore))
+    this.saito.modules.mods.push(new ChatCore(config, this.saito, this.chatStore))
     this.saito.modules.mods.push(new Registry(this.saito, this.saitoStore))
     this.saito.modules.mods.push(new ReactMod(this, this.saito, this.saitoStore))
 
@@ -265,6 +265,7 @@ export default class App extends Component {
   render() {
     return (
       <Provider
+        config={config}
         saito={this.saito}
         chatStore={this.chatStore}
         saitoStore={this.saitoStore}

@@ -9,7 +9,9 @@ import variables from '../../../native-base-theme/variables/variables'
 import { observer, inject } from 'mobx-react'
 import { Observer } from 'mobx-react/native';
 
-@inject('saito', 'saitoStore', 'dredditStore')
+//import config from '../../../satio.config'
+
+@inject('config', 'saito', 'saitoStore', 'dredditStore')
 @observer
 export default class DredditScreen extends Component {
   static navigationOptions = ({navigation}) => {
@@ -54,6 +56,7 @@ export default class DredditScreen extends Component {
   _renderItem({item, index}) {
     let { id, tx, title, author, subreddit, comments, text, link } = item
     let sig = tx.sig
+    let { protocol, host, port } = this.props.config.peers[0]
     console.log(tx)
     console.log(sig)
     return (
@@ -79,7 +82,8 @@ export default class DredditScreen extends Component {
                 </Left>
                 <Thumbnail
                   square
-                  source={{uri: `https://sandbox.saito.network/r/screenshots/${id}.png`}}
+                  // source={{uri: `https://sandbox.saito.network/r/screenshots/${id}.png`}}
+                  source={{uri: `${protocol}://${host}:${port}/r/screenshots/${id}.png`}}
                   defaultSource={require('../../../assets/img/saito_logo_black.png')}
                   />
               </Left>

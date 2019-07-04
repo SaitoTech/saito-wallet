@@ -1,5 +1,6 @@
 import {AsyncStorage} from 'react-native'
 import { observable, computed, action, trace } from 'mobx'
+// import config from '../../../satio.config'
 
 export default class DredditStore {
 
@@ -10,8 +11,9 @@ export default class DredditStore {
   @observable loadingPosts = false
   @observable loadingComments = false
 
-  constructor(saito) {
+  constructor(config, saito) {
     this.saito = saito
+    this.config = config
   }
 
   @action
@@ -233,11 +235,12 @@ export default class DredditStore {
 
   prefetchPostThumbnails() {
     let preFetchTasks = [];
+    let {protocol, host, port} = this.config.peers[0]
 
     // console.log("FETCHING")
     this.posts.forEach((p) => {
       console.log(p.id)
-      preFetchTasks.push(Image.prefetch(`https://sandbox.saito.network/r/screenshots/${p.id}`));
+      preFetchTasks.push(Image.prefetch(`${protocol}://${host}:${port}/r/screenshots/${p.id}`));
     });
 
     console.log("PREFETCHED", preFetchTasks)

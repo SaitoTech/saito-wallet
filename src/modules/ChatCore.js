@@ -1,14 +1,9 @@
 import { saito_lib, ModTemplate } from 'saito-lib'
 
-import axios from 'axios'
-
-import {observable} from 'mobx'
-
-// const uuidv4 = require('uuid/v4');
-// const uuidv5 = require('uuid/v5');
+// import config from '../../satio.config'
 
 class ChatCore extends ModTemplate {
-  constructor(app, store) {
+  constructor(config, app, store) {
     super(app);
 
     this.app = app;
@@ -21,31 +16,12 @@ class ChatCore extends ModTemplate {
 
     this.public_room_id = '984cb2da-13c1-11e9-ab14-d663bd873d93';
 
-    this.server = {
-      host: "sandbox.saito.network",
-      port: 443,
-      protocol: "https"
-    }
+    this.server = config.peers[0]
   }
 
   initialize() {
-    // start fecthing chat
-    // let publickey = this.app.wallet.returnPublicKey()
-    // this.store.addUser(publickey)
-    // this.store.setLoadingChat(true)
-
-    // axios.get(`${this._getChatURL()}/chat/${publickey}`)
-    //   .then(async (response) => {
-    //     await this.store.setChat(response.data)
-    //     this.store.setLoadingChat(false)
-    //   })
-    //   .catch(err => console.log(err))
     this.store.fetchChat()
   }
-
-  // _getChatURL() {
-  //   return `${this.server.protocol}://${this.server.host}:${this.server.port}`
-  // }
 
   ///////////////////////
   // handlePeerRequest //

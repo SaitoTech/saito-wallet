@@ -23,7 +23,6 @@ async function getData(key) {
 async function loadOptions() {
   var data = await this.getData('options')
   if (data) {
-    console.log(this)
     this.app.options = JSON.parse(data);
   }
 }

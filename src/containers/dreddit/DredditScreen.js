@@ -39,9 +39,6 @@ export default class DredditScreen extends Component {
   }
 
   onPress(id, sig, index) {
-    console.log("ID: ", id)
-    console.log("SIG: ", sig)
-    console.log("INDEX: ", index)
     const { navigation, dredditStore } = this.props
     dredditStore.setPostSig(sig)
     navigation.navigate('DredditDetail', { id, index })
@@ -57,8 +54,6 @@ export default class DredditScreen extends Component {
     let { id, tx, title, author, subreddit, comments, text, link } = item
     let sig = tx.sig
     let { protocol, host, port } = this.props.config.peers[0]
-    console.log(tx)
-    console.log(sig)
     return (
       <Observer>{() =>
         <Card

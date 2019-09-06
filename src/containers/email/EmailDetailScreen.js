@@ -65,7 +65,6 @@ export default class EmailDetailScreen extends Component {
   }
 
   onDelete = () => {
-    console.log("DOES THIS GET TRIGGERED?")
     this.props.emailStore.deleteEmail(this.email_id)
     Alert.alert('Success', "Email deleted")
     this.props.navigation.goBack()

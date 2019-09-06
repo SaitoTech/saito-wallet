@@ -108,8 +108,6 @@ export default class EmailComposeScreen extends Component {
     let tx = await this.createEmailTX()
 
     if (tx != null) {
-      debugger
-      console.log(tx)
       var newtx = this.props.saito.wallet.signTransaction(tx);
 
       this.props.saito.network.propagateTransactionWithCallback(newtx, (err) => {
@@ -133,7 +131,6 @@ export default class EmailComposeScreen extends Component {
       // alert('Do not have support for DNS yet')
       try {
         var publickey = await this.props.emailStore._getPublicKey(to)
-        console.log("RETRUNED PUBKEY", publickey)
         to = publickey
       } catch(err) {
         console.log(err)

@@ -3,16 +3,16 @@ import db from './src/db.js'
 export default {
   db,
   peers: [{
-    host: "apps.saito.network",
+    host: "sandbox.saito.network",
     port: 443,
     protocol: "https",
     synctype: "lite"
   }],
   dns: [{
-    host: "dns.saito.network",
+    host: "sandbox-dns.saito.network",
     port: 443,
     protocol: "https",
-    publickey: "23ykRYbjvAzHLRaTYPcqjkQ2LnFYeMkg9cJgXPbrWcHmr",
+    publickey: "226GV8Bz5rwNV7aNhrDybKhntsVFCtPrhd3pZ3Ayr9x33",
     domain: "saito"
   }]
 }
